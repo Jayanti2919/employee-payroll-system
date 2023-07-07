@@ -3,8 +3,10 @@ const app = express();
 const bodyParser = require("body-parser");
 const router = require("./routes/Employee.js");
 const connection = require("./utils/Connection.js");
-app.use(bodyParser.json());
+const cors = require('cors');
 
+app.use(bodyParser.json());
+app.use(cors());
 app.get("/", (req, res) => {
   res.status(200).send(JSON.stringify({ message: "server running" }));
 });

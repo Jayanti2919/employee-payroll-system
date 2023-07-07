@@ -15,10 +15,9 @@ function App() {
           }
         })
         const data = await response.json();
-        console.log(data)
+        nav('/')
       } catch(err) {
-        console.log('heloo')
-          nav('/server-down')
+        nav('/server-down')
       }
     }
 
