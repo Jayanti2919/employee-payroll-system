@@ -21,9 +21,10 @@ export function SignUp() {
     e.preventDefault();
     console.log("Clicked submit");
 
-    const response = await fetch('http://localhost:8000/user/create', {
+    const response = await fetch('http://localhost:8000/employee/create', {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json', 
       },
       body: JSON.stringify({
         'name': name,
@@ -34,8 +35,8 @@ export function SignUp() {
     })
 
     const data = await response.json();
-    if(data.message == 'user created') {
-      nav('/sign-in');
+    if(data.message === 'user created') {
+      nav('/auth/sign-in');
     } else {
       alert(data.message);
     }

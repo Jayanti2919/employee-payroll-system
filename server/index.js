@@ -42,7 +42,7 @@ app.listen(8000, function () {
     );
 
     connection.query(
-      "CREATE TABLE IF NOT EXISTS employee ( id BIGINT PRIMARY KEY, name VARCHAR(255), image VARCHAR(255), email VARCHAR(255), contact_number INT, designation VARCHAR(255), salary DOUBLE, joining_date DATETIME, company_id BIGINT, status ENUM('verified', 'not verified'), FOREIGN KEY (company_id) REFERENCES companies(id));",
+      "CREATE TABLE IF NOT EXISTS employee ( id BIGINT PRIMARY KEY, name VARCHAR(255), password VARCHAR(255), image VARCHAR(255), email VARCHAR(255), contact_number BIGINT, designation VARCHAR(255), salary DOUBLE, joining_date DATETIME, company_id BIGINT, status ENUM('verified', 'not verified'), FOREIGN KEY (company_id) REFERENCES companies(id));",
       function (err, result) {
         if (err) throw err;
         console.log("Table created employee ");
