@@ -33,6 +33,7 @@ export function SignIn() {
 
     const data = await response.json();
     if(data.message === true) {
+      sessionStorage.setItem('email', JSON.stringify({'email': email}));
       nav('/dashboard/home');
     } else {
       alert(data.message);

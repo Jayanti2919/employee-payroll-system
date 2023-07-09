@@ -50,4 +50,22 @@ router.route('/authorize').post( (req, res) => {
     })
 })
 
+router.route('/fetchCompany').get((req, res) => {
+  const email = req.header.email
+
+  connection.query(`SELECT company_id FROM employee WHERE email = '${email}';`, async (err, result) => {
+    if(err) {
+      res.send(JSON.stringify({'message': 'None'}))
+    } else {
+      connection.query(`SELECT name FROM companies WHERE id=${result[0].id};`, async(error, result_2) => {
+        if(error) {
+          res.send(JSON.stringify({'message': 'None'}))
+        } else {
+          res.send(JSON.stringify({'message': result_2[0].name}))
+        }
+      })
+    }
+  })
+})
+
 module.exports = router;

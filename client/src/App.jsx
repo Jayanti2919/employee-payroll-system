@@ -2,6 +2,8 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { Dashboard, Auth } from "@/layouts";
 import { useEffect } from "react";
 import ServerDown from "./pages/ServerDown";
+import Landing from "./pages/Landing";
+import { exact } from "prop-types";
 
 function App() {
   const nav = useNavigate()
