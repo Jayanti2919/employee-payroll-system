@@ -59,7 +59,10 @@ export function Home() {
   }, [])
   return company==='' ? (
     <div className="flex flex-col items-center min-h-[80vh] justify-center gap-10 min-w-full">
-      <Button>
+      <Button size="lg" onClick={(e)=> {
+        e.preventDefault();
+        nav('/dashboard/create-company')
+      }}>
         Create a Company
       </Button>
 
@@ -67,7 +70,7 @@ export function Home() {
         OR
       </Typography>
 
-      <Button>
+      <Button size="lg">
         Join a Company
       </Button>
     </div>
