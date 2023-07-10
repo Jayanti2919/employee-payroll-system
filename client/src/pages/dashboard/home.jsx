@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Typography,
+  Button,
   Card,
   CardHeader,
   CardBody,
@@ -32,13 +33,14 @@ import { useNavigate } from "react-router-dom";
 export function Home() {
 
   const nav = useNavigate()
+  const [company, setCompany] = useState('')
 
   useEffect(()=> {
     const email = sessionStorage.getItem('email');
-    // if(!email) {
-    //   nav('/')
-    // }
     const fetchCompanyDetails = async () => {
+      if(!email) {
+        nav('/auth/sign-in')
+      }
       const response = await fetch('http://localhost:8000/employee/fetchCompany', {
         method: 'GET',
         headers: {
@@ -47,10 +49,29 @@ export function Home() {
         }
       })
       const data = await response.json();
-      console.log(data);
+      if(data.message==='None') {
+        setCompany('')
+      } else {
+        setCompany("Company")
+      }
     }
-  })
-  return (
+    fetchCompanyDetails();
+  }, [])
+  return company==='' ? (
+    <div className="flex flex-col items-center min-h-[80vh] justify-center gap-10 min-w-full">
+      <Button>
+        Create a Company
+      </Button>
+
+      <Typography>
+        OR
+      </Typography>
+
+      <Button>
+        Join a Company
+      </Button>
+    </div>
+  ) : (
     <div className="mt-12">
       <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
         {statisticsCardsData.map(({ icon, title, footer, ...rest }) => (
