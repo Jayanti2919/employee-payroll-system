@@ -36,7 +36,7 @@ app.listen(8000, function () {
     });
 
     connection.query(
-      "CREATE TABLE IF NOT EXISTS companies ( id BIGINT PRIMARY KEY, name VARCHAR(255), image VARCHAR(255), email VARCHAR(255), contact_number INT, started_on DATETIME, gstno VARCHAR(50), team_ids JSON, status ENUM('verified', 'not verified'));",
+      "CREATE TABLE IF NOT EXISTS companies ( id BIGINT PRIMARY KEY, name VARCHAR(255), image VARCHAR(255), email VARCHAR(255) UNIQUE, contact_number BIGINT, started_on DATETIME, gstno VARCHAR(50), team_ids JSON, status ENUM('verified', 'not verified'));",
       function (err, result) {
         if (err) throw err;
         console.log("Table created companies");

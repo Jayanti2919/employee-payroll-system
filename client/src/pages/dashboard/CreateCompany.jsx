@@ -16,12 +16,13 @@ export function CreateCompany() {
         method: 'POST',
         headers: {
           email: email,
+          'Content-Type':'application/json',
         },
         body: JSON.stringify({
-          name: name,
-          gst: gst,
-          logo: logo,
-          contact: contact,
+          'name': name,
+          'gst': gst,
+          'logo': logo,
+          'contact': contact,
         })
       })
       const data = await response.json()

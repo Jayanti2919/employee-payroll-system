@@ -36,7 +36,7 @@ export function SignIn() {
       sessionStorage.setItem('email', email);
       nav('/dashboard/home');
     } else {
-      alert(data.message);
+      alert("Incorrect details");
     }
   }
   return (
