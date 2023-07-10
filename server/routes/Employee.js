@@ -45,25 +45,32 @@ router.route('/authorize').post( (req, res) => {
             console.log(err);
             res.send(JSON.stringify({'message': 'Unable to authenticate'}))
         } 
-        const isCorrectPassword = await bcrypt.compare(body.password, result[0].password);
-        res.send(JSON.stringify({'message': isCorrectPassword})); 
+        if(!result[0]){
+          res.send(JSON.stringify({'message': false})); 
+        } else {
+          const isCorrectPassword = await bcrypt.compare(body.password, result[0].password);
+          res.send(JSON.stringify({'message': isCorrectPassword})); 
+        }
     })
 })
 
 router.route('/fetchCompany').get((req, res) => {
-  const email = req.header.email
+  const email = req.headers.email
   try{
     connection.query(`SELECT company_id FROM employee WHERE email = '${email}';`, async (err, result) => {
       if(err) {
-        res.send(JSON.stringify({'message': 'None'}))
+        res.send(JSON.stringify({'message': 'None1'}))
       } else {
+        console.log(result)
         if(!result[0]){
-          res.send(JSON.stringify({'message': 'None'}))
+          res.send(JSON.stringify({'message': 'None2'}))
         } else {
-          connection.query(`SELECT name FROM companies WHERE id=${result[0].id};`, async(error, result_2) => {
+          connection.query(`SELECT name FROM companies WHERE id=${result[0].company_id};`, async(error, result_2) => {
             if(error) {
-              res.send(JSON.stringify({'message': 'None'}))
+              console.log(error)
+              res.send(JSON.stringify({'message': 'None3'}))
             } else {
+              console.log(result_2[0])
               res.send(JSON.stringify({'message': result_2[0].name}))
             }
           })

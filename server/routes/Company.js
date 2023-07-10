@@ -34,8 +34,9 @@ router.route('/create').post((req, res) => {
                                     res.send(JSON.stringify({message:"Error creating comapany"}))
                                 }
                             } else {
-                                connection.query(`UPDATE SET company_id=${result[0].count} WHERE email='${email}'`, (error2)=>{
+                                connection.query(`UPDATE employee SET company_id=${result[0].count} WHERE email='${email}'`, (error2)=>{
                                     if(error2) {
+                                        console.log(error2)
                                         res.send(JSON.stringify({message:"Error creating comapany"}))
                                     } else {
                                         res.send(JSON.stringify({message:"Company created"}));

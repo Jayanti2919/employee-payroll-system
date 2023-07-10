@@ -13,34 +13,34 @@ import {
 
 export function SignUp() {
   const nav = useNavigate();
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [contact, setContact] = useState(0)
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [contact, setContact] = useState(0);
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Clicked submit");
 
-    const response = await fetch('http://localhost:8000/employee/create', {
-      method: 'POST',
+    const response = await fetch("http://localhost:8000/employee/create", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json', 
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        'name': name,
-        'email': email,
-        'password': password,
-        'contact': contact,
-      })
-    })
+        name: name,
+        email: email,
+        password: password,
+        contact: contact,
+      }),
+    });
 
     const data = await response.json();
-    if(data.message === 'user created') {
-      nav('/auth/sign-in');
+    if (data.message === "user created") {
+      nav("/auth/sign-in");
     } else {
       alert(data.message);
     }
-  }
+  };
 
   return (
     <>
@@ -50,44 +50,82 @@ export function SignUp() {
       />
       <div className="absolute inset-0 z-0 h-full w-full bg-black/50" />
       <div className="container mx-auto p-4">
-        <Card className="absolute top-2/4 left-2/4 w-full max-w-[24rem] -translate-y-2/4 -translate-x-2/4 mt-28 mb-3">
-          <CardHeader
-            variant="gradient"
-            color="blue"
-            className="mb-4 grid h-28 place-items-center"
-          >
-            <Typography variant="h3" color="white">
-              Sign Up
-            </Typography>
-          </CardHeader>
-          <CardBody className="flex flex-col gap-4">
-            <Input label="Name" size="lg" onChange={(e) => {setName(e.target.value)}}/>
-            <Input type="email" label="Email" size="lg" onChange={(e) => {setEmail(e.target.value)}}/>
-            <Input type="password" label="Password" size="lg" onChange={(e) => {setPassword(e.target.value)}}/>
-            <Input type="number" label="Contact Number" size="lg" onChange={(e) => {setContact(e.target.value)}}/>
-            <div className="-ml-2.5">
-              <Checkbox label="I agree the Terms and Conditions" />
-            </div>
-          </CardBody>
-          <CardFooter className="pt-0">
-            <Button variant="gradient" fullWidth type="submit" onClick={handleSubmit}>
-              Sign Up
-            </Button>
-            <Typography variant="small" className="mt-6 flex justify-center">
-              Already have an account?
-              <Link to="/auth/sign-in">
-                <Typography
-                  as="span"
-                  variant="small"
-                  color="blue"
-                  className="ml-1 font-bold"
-                >
-                  Sign in
-                </Typography>
-              </Link>
-            </Typography>
-          </CardFooter>
-        </Card>
+        <form action="" onSubmit={handleSubmit}>
+          <Card className="absolute top-2/4 left-2/4 mt-28 mb-3 w-full max-w-[24rem] -translate-y-2/4 -translate-x-2/4">
+            <CardHeader
+              variant="gradient"
+              color="blue"
+              className="mb-4 grid h-28 place-items-center"
+            >
+              <Typography variant="h3" color="white">
+                Sign Up
+              </Typography>
+            </CardHeader>
+            <CardBody className="flex flex-col gap-4">
+              <Input
+                label="Name"
+                size="lg"
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+                required={true}
+              />
+              <Input
+                type="email"
+                label="Email"
+                size="lg"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+                required={true}
+              />
+              <Input
+                type="password"
+                label="Password"
+                size="lg"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+                required={true}
+              />
+              <Input
+                type="number"
+                label="Contact Number"
+                size="lg"
+                onChange={(e) => {
+                  setContact(e.target.value);
+                }}
+                required={true}
+              />
+              <div className="-ml-2.5">
+                <Checkbox label="I agree the Terms and Conditions" />
+              </div>
+            </CardBody>
+            <CardFooter className="pt-0">
+              <Button
+                variant="gradient"
+                fullWidth
+                type="submit"
+                
+              >
+                Sign Up
+              </Button>
+              <Typography variant="small" className="mt-6 flex justify-center">
+                Already have an account?
+                <Link to="/auth/sign-in">
+                  <Typography
+                    as="span"
+                    variant="small"
+                    color="blue"
+                    className="ml-1 font-bold"
+                  >
+                    Sign in
+                  </Typography>
+                </Link>
+              </Typography>
+            </CardFooter>
+          </Card>
+        </form>
       </div>
     </>
   );
