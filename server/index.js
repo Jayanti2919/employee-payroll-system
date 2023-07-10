@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const router = require("./routes/Employee.js");
+const employee_router = require("./routes/Employee.js");
+const company_router = require("./routes/Company.js");
 const connection = require("./utils/Connection.js");
 const cors = require('cors');
 
@@ -11,7 +12,8 @@ app.get("/", (req, res) => {
   res.status(200).send(JSON.stringify({ message: "server running" }));
 });
 
-app.use("/employee", router);
+app.use("/employee", employee_router);
+app.use("/company", company_router);
 
 app.listen(8000, function () {
   connection.connect(function (err) {
