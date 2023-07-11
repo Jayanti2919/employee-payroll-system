@@ -5,6 +5,10 @@ const employee_router = require("./routes/Employee.js");
 const company_router = require("./routes/Company.js");
 const connection = require("./utils/Connection.js");
 const cors = require('cors');
+const Employee = require('./models/employee.model.js');
+const Companies = require('./models/companies.model.js');
+const Teams = require('./models/teams.model.js');
+const { Sequelize } = require("sequelize");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -15,48 +19,20 @@ app.get("/", (req, res) => {
 app.use("/employee", employee_router);
 app.use("/company", company_router);
 
-app.listen(8000, function () {
-  connection.connect(function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(`Server running and MySQL connected at 8000`);
-    }
-    connection.query(
-      "CREATE DATABASE IF NOT EXISTS payroll",
-      function (err, result) {
-        if (err) throw err;
-        console.log("Database created");
-      }
-    );
 
-    connection.query("USE payroll", (err) => {
-      if (err) throw err;
-      console.log("using payroll db");
-    });
 
-    connection.query(
-      "CREATE TABLE IF NOT EXISTS companies ( id BIGINT PRIMARY KEY, name VARCHAR(255), image VARCHAR(255), email VARCHAR(255) UNIQUE, contact_number BIGINT, started_on DATETIME, gstno VARCHAR(50), team_ids JSON, status ENUM('verified', 'not verified'));",
-      function (err, result) {
-        if (err) throw err;
-        console.log("Table created companies");
-      }
-    );
+app.listen(8000, async function() {
+  const sequelize = new Sequelize('mysql://root:@localhost:3306/', { logging: false });
 
-    connection.query(
-      "CREATE TABLE IF NOT EXISTS employee ( id BIGINT PRIMARY KEY, name VARCHAR(255), password VARCHAR(255), image VARCHAR(255), email VARCHAR(255) UNIQUE, contact_number BIGINT, designation VARCHAR(255), salary DOUBLE, joining_date DATETIME, company_id BIGINT, status ENUM('verified', 'not verified'), FOREIGN KEY (company_id) REFERENCES companies(id));",
-      function (err, result) {
-        if (err) throw err;
-        console.log("Table created employee ");
-      }
-    );
-
-    connection.query(
-      "CREATE TABLE IF NOT EXISTS teams ( id BIGINT PRIMARY KEY, name VARCHAR(255), description LONGTEXT,  status ENUM('verified', 'not verified'));",
-      function (err, result) {
-        if (err) throw err;
-        console.log("Table created teams ");
-      }
-    );
-  });
-});
+  await sequelize.query('CREATE DATABASE IF NOT EXISTS payroll');
+  console.log('Database created or successfully connected to an existing database.');
+  connection.authenticate().then(()=>{
+    console.log('Connected to Payroll DB and listening to port 8000')
+  }).catch((error)=>{
+    console.log(error)
+  })
+  await Companies.sync();
+  await Employee.sync();
+  await Teams.sync();
+  console.log("Created all tables");
+})
