@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const mysql = require("mysql");
-const connection = require("../utils/Connection.js");
 const getDate = require("../utils/GetDate.js");
 const Employee = require("../models/employee.model.js");
 const Companies = require("../models/companies.model.js");
@@ -27,10 +25,10 @@ router.route("/create").post(async (req, res) => {
         started_on: currentDate,
         gstno: body.gst,
         status: "active",
-    });
-    await company.save();
-    emp.company_id = company.id;
-    res.send(JSON.stringify({message:"Company created"}));
+      });
+      await company.save();
+      emp.company_id = company.id;
+      res.send(JSON.stringify({ message: "Company created" }));
     } catch (error) {
       console.log(error);
       res.send(JSON.stringify({ message: "Error creating comapany" }));

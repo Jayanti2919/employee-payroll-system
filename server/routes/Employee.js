@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const mysql = require("mysql");
-const connection = require("../utils/Connection.js");
 const bcrypt = require("bcrypt");
 const Employee = require("../models/employee.model.js");
 const Companies = require("../models/companies.model.js");
@@ -52,7 +50,7 @@ router.route("/fetchCompany").get(async (req, res) => {
     if (!company) {
       res.send(JSON.stringify({ message: "None" }));
     } else {
-      res.send(JSON.stringify({'message': company.name}))
+      res.send(JSON.stringify({ message: company.name }));
     }
   }
 });
