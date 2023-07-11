@@ -33,7 +33,7 @@ export function DashboardNavbar() {
   const [layout, page] = pathname.split("/").filter((el) => el !== "");
 
   function handleSignOut() {
-    sessionStorage.removeItem('email');
+    sessionStorage.removeItem('token');
     window.location.reload();
   }
 

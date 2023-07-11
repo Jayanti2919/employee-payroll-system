@@ -28,6 +28,7 @@ router.route("/create").post(async (req, res) => {
       });
       await company.save();
       emp.company_id = company.id;
+      emp.designation = 'Owner';
       res.send(JSON.stringify({ message: "Company created" }));
     } catch (error) {
       console.log(error);

@@ -74,35 +74,44 @@ router.route("/fetchCompany").get(async (req, res) => {
       }
     }
   }
-
+  
 });
 
 router.route("/fetchProfile").get(async(req, res) => {
-  const email = req.headers.email;
-  const emp = await Employee.findOne({where: {email: email}});
-  if(!emp) {
-    res.send(JSON.stringify({ message: "No such user" }));
+  const token = req.headers.token;
+  const valid = validateJWT(token);
+  
+  if(!valid) {
+    res.send(JSON.stringify({'message': 'Unauthorized access'}))
   } else {
-    const company = await Companies.findOne({where: {id: emp.company_id}})
-    if(!company){
-      res.send(JSON.stringify({
-        'name': emp.name,
-        'salary': emp.salary,
-        'email': emp.email,
-        'contact': emp.contact_number,
-        'joining_date': emp.joining_date,
-        'status': emp.status,
-      }))
+    const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email
+    const emp = await Employee.findOne({where: {email: email}});
+    if(!emp) {
+      res.send(JSON.stringify({ message: "No such user" }));
     } else {
-      res.send(JSON.stringify({
-        'name': emp.name,
-        'salary': emp.salary,
-        'email': emp.email,
-        'contact': emp.contact_number,
-        'joining_date': emp.joining_date,
-        'company_name': company.name,
-        'status': emp.status,
-      }))
+      const company = await Companies.findOne({where: {id: emp.company_id}})
+      if(!company){
+        res.send(JSON.stringify({
+          'name': emp.name,
+          'salary': emp.salary,
+          'email': emp.email,
+          'contact': emp.contact_number,
+          'joining_date': emp.joining_date,
+          'status': emp.status,
+        }))
+      } else {
+        res.send(JSON.stringify({
+          'name': emp.name,
+          'salary': emp.salary,
+          'email': emp.email,
+          'contact': emp.contact_number,
+          'joining_date': emp.joining_date,
+          'company_name': company.name,
+          'designation': emp.designation,
+          'salary': emp.salary,
+          'status': emp.status,
+        }))
+      }
     }
   }
 })
