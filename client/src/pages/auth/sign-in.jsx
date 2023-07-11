@@ -32,8 +32,8 @@ export function SignIn() {
     });
 
     const data = await response.json();
-    if (data.message === true) {
-      sessionStorage.setItem("email", email);
+    if (data.token) {
+      sessionStorage.setItem("token", data.token);
       nav("/dashboard/home");
     } else {
       alert("Incorrect details");

@@ -31,49 +31,51 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export function Home() {
+  const nav = useNavigate();
+  const [company, setCompany] = useState("");
 
-  const nav = useNavigate()
-  const [company, setCompany] = useState('')
-
-  useEffect(()=> {
-    const email = sessionStorage.getItem('email');
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
     const fetchCompanyDetails = async () => {
-      if(!email) {
-        nav('/auth/sign-in')
+      if (!token) {
+        nav("/auth/sign-in");
       }
-      const response = await fetch('http://localhost:8000/employee/fetchCompany', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'email': email,
+      const response = await fetch(
+        "http://localhost:8000/employee/fetchCompany",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
         }
-      })
+      );
       const data = await response.json();
-      console.log(data);
-      if(data.message==='None') {
-        setCompany('')
+      if (data.message === "Unauthorized access") {
+        nav("/auth/sign-in");
+      } else if (data.message === "None") {
+        setCompany("");
       } else {
-        setCompany("Company")
+        setCompany("Company");
       }
-    }
+    };
     fetchCompanyDetails();
-  }, [])
-  return company==='' ? (
-    <div className="flex flex-col items-center min-h-[80vh] justify-center gap-10 min-w-full">
-      <Button size="lg" onClick={(e)=> {
-        e.preventDefault();
-        nav('/dashboard/create-company')
-      }}>
+  }, []);
+  return company === "" ? (
+    <div className="flex min-h-[80vh] min-w-full flex-col items-center justify-center gap-10">
+      <Button
+        size="lg"
+        onClick={(e) => {
+          e.preventDefault();
+          nav("/dashboard/create-company");
+        }}
+      >
         Create a Company
       </Button>
 
-      <Typography>
-        OR
-      </Typography>
+      <Typography>OR</Typography>
 
-      <Button size="lg">
-        Join a Company
-      </Button>
+      <Button size="lg">Join a Company</Button>
     </div>
   ) : (
     <div className="mt-12">
