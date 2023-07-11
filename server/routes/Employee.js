@@ -2,84 +2,59 @@ const express = require("express");
 const router = express.Router();
 const mysql = require("mysql");
 const connection = require("../utils/Connection.js");
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
+const Employee = require("../models/employee.model.js");
+const Companies = require("../models/companies.model.js");
+const getDate = require("../utils/GetDate.js");
 
 router.route("/create").post(async (req, res) => {
   const body = req.body;
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const day = String(currentDate.getDate()).padStart(2, "0");
-  const hours = String(currentDate.getHours()).padStart(2, "0");
-  const minutes = String(currentDate.getMinutes()).padStart(2, "0");
-  const seconds = String(currentDate.getSeconds()).padStart(2, "0");
-
-  const currentDateTimeIST = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   const password = await bcrypt.hash(body.password, 10);
 
   const contact = parseInt(body.contact);
-  connection.query("SELECT COUNT(*) AS num FROM employee;", (err, result) => {
-    if (err) {
-        console.log(err);
-        res.send(JSON.stringify({'message': 'Unable to register at the moment'}));
-    }
-    connection.query(
-      `INSERT IGNORE INTO employee(id,name,email,password,contact_number,joining_date) VALUES(${result[0].num},'${body.name}','${body.email}','${password}',${contact},'${currentDateTimeIST}');`,
-      (error) => {
-        if (error) {
-            console.log(error);
-            res.send(JSON.stringify({'message': 'Unable to register at the moment'}));
-        } 
-        console.log("Employee created");
-        res.send(JSON.stringify({'message': 'user created'}))
-      }
-    );
-  });
+  const currentDateTimeIST = getDate();
+  try {
+    const emp = await Employee.create({
+      name: body.name,
+      email: body.email,
+      password: password,
+      contact_number: contact,
+      joining_date: currentDateTimeIST,
+    });
+    await emp.save();
+    res.send(JSON.stringify({ message: "user created" }));
+  } catch (error) {
+    console.log(error);
+    res.send(JSON.stringify({ message: "An error occurred" }));
+  }
 });
 
-router.route('/authorize').post( (req, res) => {
-    const body = req.body;
+router.route("/authorize").post(async (req, res) => {
+  const body = req.body;
 
-    connection.query(`SELECT * FROM employee WHERE email='${body.email}'`, async (err, result) => {
-        if(err) {
-            console.log(err);
-            res.send(JSON.stringify({'message': 'Unable to authenticate'}))
-        } 
-        if(!result[0]){
-          res.send(JSON.stringify({'message': false})); 
-        } else {
-          const isCorrectPassword = await bcrypt.compare(body.password, result[0].password);
-          res.send(JSON.stringify({'message': isCorrectPassword})); 
-        }
-    })
-})
-
-router.route('/fetchCompany').get((req, res) => {
-  const email = req.headers.email
-  try{
-    connection.query(`SELECT company_id FROM employee WHERE email = '${email}';`, async (err, result) => {
-      if(err) {
-        res.send(JSON.stringify({'message': 'None1'}))
-      } else {
-        console.log(result)
-        if(!result[0]){
-          res.send(JSON.stringify({'message': 'None2'}))
-        } else {
-          connection.query(`SELECT name FROM companies WHERE id=${result[0].company_id};`, async(error, result_2) => {
-            if(error) {
-              console.log(error)
-              res.send(JSON.stringify({'message': 'None3'}))
-            } else {
-              console.log(result_2[0])
-              res.send(JSON.stringify({'message': result_2[0].name}))
-            }
-          })
-        }
-      }
-    })
-  } catch(error) {
-    console.log(error);
+  const emp = await Employee.findOne({ where: { email: body.email } });
+  if (!emp) {
+    res.send(JSON.stringify({ message: "Unable to authenticate" }));
+  } else {
+    const isCorrectPassword = await bcrypt.compare(body.password, emp.password);
+    res.send(JSON.stringify({ message: isCorrectPassword }));
   }
-})
+});
+
+router.route("/fetchCompany").get(async (req, res) => {
+  const email = req.headers.email;
+
+  const emp = await Employee.findOne({ where: { email: email } });
+  if (!emp) {
+    res.send(JSON.stringify({ message: "No such user" }));
+  } else {
+    const company = await Companies.findOne({ where: { email: email } });
+    if (!company) {
+      res.send(JSON.stringify({ message: "None" }));
+    } else {
+      res.send(JSON.stringify({'message': company.name}))
+    }
+  }
+});
 
 module.exports = router;

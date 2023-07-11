@@ -19,6 +19,10 @@ const Employee = connection.define('employee', {
         allowNull: false,
         unique: true,
     },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     contact_number: {
         type: DataTypes.BIGINT,
         unique: true,
