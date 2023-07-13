@@ -10,9 +10,6 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
-  Avatar,
-  Tooltip,
-  Progress,
   Input,
 } from "@material-tailwind/react";
 import {
@@ -36,6 +33,7 @@ import {
   ChartBarIcon,
   XCircleIcon,
   PlusCircleIcon,
+  DocumentDuplicateIcon,
 } from "@heroicons/react/24/solid";
 
 export function Home() {
@@ -210,6 +208,7 @@ export function Home() {
       setempSalary(0);
       setEmail("");
       setRole("");
+      setCode(data.code)
     }
   };
 
@@ -443,9 +442,9 @@ export function Home() {
                   type="number"
                   step={0.01}
                   value={empSalary}
-                  onClick={(e) => setempSalary(e.target.value)}
+                  onChange={(e) => setempSalary(e.target.value)}
                 />
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-2">
                   <Button type="submit">Add</Button>
                   <Button
                     variant="outlined"
@@ -457,12 +456,20 @@ export function Home() {
                     Cancel
                   </Button>
                 </div>
+                <div className="flex gap-1">
+
                 <Input
-                  label="Text"
+                  label="Invite Code"
                   value={code}
                   onChange={handleChange}
                   readOnly // Add the readOnly attribute
+                  onClick={handleCopyClick}
+                  className="cursor-copy"
                 />
+                <Button className="w-fit px-3" onClick={handleCopyClick}>
+                    <DocumentDuplicateIcon className="h-4 w-4 text-white"/>
+                </Button>
+                  </div>
               </form>
             </div>
           </CardHeader>
