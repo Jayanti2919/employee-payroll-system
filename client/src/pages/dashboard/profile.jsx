@@ -22,9 +22,9 @@ export function Profile() {
   const [company, setCompany] = useState("None");
   const [designation, setDesignation] = useState("User");
   const [joining_date, setJoiningDate] = useState("");
-  const [img, setImage] = useState('/img/placeholder.jpg')
-  const [edit, setEdit] = useState(false)
-  const [file, setFile] = useState(null)
+  const [img, setImage] = useState("/img/placeholder.jpg");
+  const [edit, setEdit] = useState(false);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -47,7 +47,7 @@ export function Profile() {
         setName(data.name);
         setEmail(data.email);
         setContact(data.contact);
-        setJoiningDate(data.joining_date.substring(0, 10))
+        setJoiningDate(data.joining_date.substring(0, 10));
         if (data.designation) {
           setDesignation(data.designation);
         }
@@ -56,23 +56,32 @@ export function Profile() {
     getProfileData();
   }, []);
 
-  const handleUpload= async (e)=>{
+  const handleUpload = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    console.log(file)
-    formData.append('file', file);
 
-    console.log(formData)
+    if (!file) {
+      console.error("No file selected.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    console.log(formData);
+
     try {
-      await axios.post("http://localhost:8000/employee/profilePhoto", formData, {
-        headers: {
-        },
-      });
-      setAlert("Posted!");
+      await axios.post(
+        "http://localhost:8000/employee/profilePhoto",
+        formData,
+        {
+          headers: {},
+        }
+      );
+      alert("Posted!");
     } catch (error) {
       console.error("Error adding Image:", error);
     }
-  }
+  };
 
   return (
     <>
@@ -87,10 +96,15 @@ export function Profile() {
                 src={img}
                 alt="profile-photo"
                 size="xl"
-                className="rounded-lg shadow-lg shadow-blue-gray-500/40 relative"
+                className="relative rounded-lg shadow-lg shadow-blue-gray-500/40"
               />
-              <div className="absolute top-2 left-3 bg-blue-gray-500/40 rounded-full cursor-pointer" onClick={(e)=>{setEdit(!edit)}}>
-                  <PencilIcon className="h-5 w-5 p-1"/>
+              <div
+                className="absolute top-2 left-3 cursor-pointer rounded-full bg-blue-gray-500/40"
+                onClick={(e) => {
+                  setEdit(!edit);
+                }}
+              >
+                <PencilIcon className="h-5 w-5 p-1" />
               </div>
               <div>
                 <Typography variant="h5" color="blue-gray" className="mb-1">
@@ -105,26 +119,36 @@ export function Profile() {
               </div>
             </div>
           </div>
-          {edit ? 
-          <div className="px-4 mt-2 mb-5">
-            <form action="" className="flex gap-2" onSubmit={handleUpload}>
-            <Input type="file" label="Profile Photo" onChange={(e)=>{setFile(e.target.files[0])}}/>
-            <Button type="submit">Upload</Button>
-            </form>
-          </div> : <></>}
+          {edit ? (
+            <div className="mt-2 mb-5 px-4">
+              <form action="" className="flex gap-2" onSubmit={handleUpload}>
+                <Input
+                  type="file"
+                  label="Profile Photo"
+                  accept="image/*"
+                  onChange={(e) => {
+                    setFile(e.target.files[0]);
+                  }}
+                />
+                <Button type="submit">Upload</Button>
+              </form>
+            </div>
+          ) : (
+            <></>
+          )}
           <div className="px-4">
-          <ProfileInfoCard
-            title="Profile Information"
-            description={`Member of the platform since ${joining_date}`}
-            details={{
-              "Name": name,
-              mobile: contact,
-              email: email,
-              company: company,
-            }}
-          />
+            <ProfileInfoCard
+              title="Profile Information"
+              description={`Member of the platform since ${joining_date}`}
+              details={{
+                Name: name,
+                mobile: contact,
+                email: email,
+                company: company,
+              }}
+            />
           </div>
-          <div className="gird-cols-1 mb-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3 mt-12">
+          <div className="gird-cols-1 mb-12 mt-12 grid gap-12 px-4 lg:grid-cols-2 xl:grid-cols-3">
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-3">
                 Platform Settings

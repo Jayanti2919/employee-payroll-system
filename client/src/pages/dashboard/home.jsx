@@ -23,16 +23,64 @@ import {
 import { StatisticsCard } from "@/widgets/cards";
 import { StatisticsChart } from "@/widgets/charts";
 import {
-  statisticsCardsData,
   statisticsChartsData,
   projectsTableData,
   ordersOverviewData,
 } from "@/data";
 import { useNavigate } from "react-router-dom";
+import {
+  BanknotesIcon,
+  UserPlusIcon,
+  UserIcon,
+  ChartBarIcon,
+} from "@heroicons/react/24/solid";
 
 export function Home() {
   const nav = useNavigate();
   const [company, setCompany] = useState("");
+  const [salary, setSalary] = useState('');
+  const [attendance, setAttendance] = useState('Pending');
+  const [date, setDate] = useState('');
+  const [designation, setDesignation] = useState('');
+
+  const statisticsCardsData = [
+    {
+      color: "blue",
+      icon: BanknotesIcon,
+      title: "Your Salary",
+      value: salary,
+      footer: {
+        label: "",
+      },
+    },
+    {
+      color: "pink",
+      icon: UserIcon,
+      title: "Attendance",
+      value: attendance,
+      footer: {
+        label: new Date().toLocaleDateString(),
+      },
+    },
+    {
+      color: "green",
+      icon: UserPlusIcon,
+      title: "Company",
+      value: company,
+      footer: {
+        label: "Joined on " + date,
+      },
+    },
+    {
+      color: "orange",
+      icon: ChartBarIcon,
+      title: "Role",
+      value: designation,
+      footer: {
+        label: "",
+      },
+    },
+  ];
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -56,7 +104,10 @@ export function Home() {
       } else if (data.message === "None") {
         setCompany("");
       } else {
-        setCompany("Company");
+        setCompany(data.company)
+        setDesignation(data.designation)
+        setSalary(data.salary)
+        setDate(data.joining_date.substring(0,10))
       }
     };
     fetchCompanyDetails();
@@ -90,7 +141,6 @@ export function Home() {
             })}
             footer={
               <Typography className="font-normal text-blue-gray-600">
-                <strong className={footer.color}>{footer.value}</strong>
                 &nbsp;{footer.label}
               </Typography>
             }

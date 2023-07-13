@@ -7,15 +7,16 @@ export function CreateCompany() {
   const [gst, setGst] = useState('')
   const [contact, setContact] = useState(0)
   const [logo, setLogo] = useState(null)
+  const [salary, setSalary] = useState(null)
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    const email = sessionStorage.getItem('email')
+    const token = sessionStorage.getItem('token')
     try {
       const response = await fetch('http://localhost:8000/company/create', {
         method: 'POST',
         headers: {
-          email: email,
+          token: token,
           'Content-Type':'application/json',
         },
         body: JSON.stringify({
@@ -23,6 +24,7 @@ export function CreateCompany() {
           'gst': gst,
           'logo': logo,
           'contact': contact,
+          'salary': salary,
         })
       })
       const data = await response.json()
@@ -50,7 +52,8 @@ export function CreateCompany() {
             <Input type="text" label="Name" size="lg" onChange={(e)=>{setName(e.target.value)}} required={true} />
             <Input type="text" label="GST Number" size="lg" onChange={(e)=>{setGst(e.target.value)}} required={true} />
             <Input type="number" label="Contact Number" size="lg" onChange={(e)=>{setContact(e.target.value)}} required={true} />
-            <Input type="file" label="Company Logo" size="lg" onChange={(e)=>{setLogo(e.target.value)}}/>
+            <Input type="number" step={0.01} label="Salary" size="lg" onChange={(e)=>{setSalary(e.target.value)}}/>
+            <Input type="file" label="Company Logo" size="lg" onChange={(e)=>{setLogo(e.target.files[0])}}/>
           </CardBody>
           <CardFooter className="pt-0">
             <Button variant="gradient" fullWidth type="submit">

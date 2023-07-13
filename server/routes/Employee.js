@@ -72,7 +72,12 @@ router.route("/fetchCompany").get(async (req, res) => {
       if (!company) {
         res.send(JSON.stringify({ message: "None" }));
       } else {
-        res.send(JSON.stringify({ message: company.name }));
+        res.send(JSON.stringify({ 
+          company : company.name,
+          designation: emp.designation,
+          joining_date: emp.joining_date,
+          salary: emp.salary,
+         }));
       }
     }
   }
@@ -124,34 +129,34 @@ router.route("/fetchProfile").get(async (req, res) => {
 });
 
 router.route("/profilePhoto").post(async (req, res) => {
-  const s3 = new S3Client({
-    region: process.env.S3_BUCKET_REGION,
-    credentials:{
-      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-      accessKeyId: process.env.S3_ACCESS_KEY,
-    }
-  });
+  // const s3 = new S3Client({
+  //   region: process.env.S3_BUCKET_REGION,
+  //   credentials:{
+  //     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  //     accessKeyId: process.env.S3_ACCESS_KEY,
+  //   }
+  // });
 
   const file = req.file;
   console.log(file)
-  const stream = fs.createReadStream(file.path);
+  // const stream = fs.createReadStream(file.path);
 
-  const params = {
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: file.name,
-    Body: stream,
-  };
+  // const params = {
+  //   Bucket: process.env.S3_BUCKET_NAME,
+  //   Key: file.name,
+  //   Body: stream,
+  // };
 
-  try {
-    const upload = new PutObjectCommand(params);
-    const promise = await s3.send(upload);
-    console.log(promise);
-    console.log("Uploaded!");
-    res.send(JSON.stringify({'message':"Uploaded"}))
-  } catch (error) {
-    console.log(error);
-    res.send(JSON.stringify({'message':"Error"}))
-  }
+  // try {
+  //   const upload = new PutObjectCommand(params);
+  //   const promise = await s3.send(upload);
+  //   console.log(promise);
+  //   console.log("Uploaded!");
+  //   res.send(JSON.stringify({'message':"Uploaded"}))
+  // } catch (error) {
+  //   console.log(error);
+  //   res.send(JSON.stringify({'message':"Error"}))
+  // }
 });
 
 
