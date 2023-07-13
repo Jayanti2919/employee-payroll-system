@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const fs = require("fs");
+const Teams = require("../models/teams.model.js");
 
 dotenv.config();
 
@@ -110,6 +111,9 @@ router.route("/fetchProfile").get(async (req, res) => {
           })
         );
       } else {
+        console.log("helleooo")
+        const teams = await Teams.findAll({where: {company_id: company.id}})
+        await console.log(teams)
         res.send(
           JSON.stringify({
             name: emp.name,

@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize')
 const connection = require('../utils/Connection.js')
 
-const Attendance = connection.define('teams', {
+const Attendance = connection.define('attendance', {
     id: {
         type: DataTypes.BIGINT,
         autoIncrement: true,

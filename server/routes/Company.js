@@ -56,10 +56,10 @@ router.route("/create").post(async (req, res) => {
 
 router.route('/addTeam').post(async (req, res) => {
   const token = req.headers.token;
-  console.log(token)
+  // console.log(token)
   const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email;
-
-  const emp = Employee.findOne({where: {email: email}})
+  console.log(email)
+  const emp = await Employee.findOne({where: {email: email}})
   if(!emp) {
     res.send(JSON.stringify({'message': 'Error'}));
   } else {
@@ -72,15 +72,15 @@ router.route('/addTeam').post(async (req, res) => {
       })
       await team.save();
       const company = await Companies.findOne({where: {id: emp.company_id}})
-      var teams = JSON.parse(company.teams);
-      teams.team.id = team.name
-      company.teams = JSON.stringify(teams)
+      var teams=company.teamids?company.teamids:{}
+      const t_id=team.dataValues.id
+      teams[t_id] = (team.dataValues.name)
+      company.teamids = JSON.stringify(teams)
       await company.save()
-      console.log(company.teams)
-      res.send("DONE")
+      res.send(JSON.stringify({message: "Created Team"}))
     } catch(error) {
       console.log(error)
-      res.send("Error")
+      res.send(JSON.stringify({message: 'Error'}))
     }
   }
 })

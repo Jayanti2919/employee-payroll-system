@@ -34,7 +34,7 @@ import {
   UserPlusIcon,
   UserIcon,
   ChartBarIcon,
-  Bars2Icon,
+  XCircleIcon,
 } from "@heroicons/react/24/solid";
 
 export function Home() {
@@ -57,14 +57,19 @@ export function Home() {
       method: 'POST',
       headers: {
         'token': token,
+        'Content-Type': 'application/json',
       },
-      body: {
+      body: JSON.stringify({
         name: teamName,
         description: description,
-      }
+      })
     })
     const data = await response.json();
-    alert(data)
+    if(data.message==='Created Team') {
+      location.reload();
+    } else {
+      alert(data.message)
+    }
   }
 
   const statisticsCardsData = [
@@ -238,7 +243,7 @@ export function Home() {
             </Menu>
             <div className={`${addTeam ? "block" : "hidden"}`}>
               <Card>
-                <Bars2Icon
+                <XCircleIcon
                   strokeWidth={3}
                   className="h-6 w-6 text-blue-gray-500 cursor-pointer"
                   onClick={(e) => {
