@@ -54,6 +54,19 @@ export function Home() {
 
   const [teamName, setTeamName] = useState("");
   const [description, setDescription] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
+  const [code, setCode] = useState("");
+  const [empSalary, setempSalary] = useState(0);
+
+  const handleCopyClick = (e) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(code);
+  };
+
+  const handleChange = () => {
+    console.log("Changing")
+  }
 
   const handleAddTeam = async (e) => {
     const token = sessionStorage.getItem("token");
@@ -148,8 +161,12 @@ export function Home() {
     fetchCompanyDetails();
   }, []);
 
-  async function getTeamData(key) {
-    setSelectedTeam(teams[key].name);
+  async function getTeamData(id, name) {
+    setSelectedTeam({
+      id: id,
+      name: name,
+    });
+
     const token = sessionStorage.getItem("token");
     const response = await fetch(
       "http://localhost:8000/company/fetchTeamData",
@@ -157,7 +174,7 @@ export function Home() {
         method: "GET",
         headers: {
           token: token,
-          team: key,
+          team: id,
         },
       }
     );
@@ -172,7 +189,28 @@ export function Home() {
 
   const handleAddMember = async (e) => {
     e.preventDefault();
-    console.log("Adding");
+    const token = sessionStorage.getItem("token");
+    const response = await fetch("http://localhost:8000/employee/addEmployee", {
+      method: "POST",
+      headers: {
+        token: token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        designation: role,
+        salary: empSalary,
+        t_id: selectedTeam.id,
+      }),
+    });
+
+    const data = await response.json();
+    alert(data.message);
+    if (data.message === "user created") {
+      setempSalary(0);
+      setEmail("");
+      setRole("");
+    }
   };
 
   return company === "" ? (
@@ -338,7 +376,7 @@ export function Home() {
                       <td
                         className={`${className} cursor-pointer`}
                         onClick={() => {
-                          getTeamData(key);
+                          getTeamData(id, name);
                         }}
                       >
                         {name}
@@ -367,7 +405,7 @@ export function Home() {
             className="m-0 p-6"
           >
             <Typography variant="h6" color="blue-gray" className="mb-2">
-              Members of {selectedTeam}
+              Members of {selectedTeam.name}
             </Typography>
             <div
               className={`${
@@ -386,7 +424,27 @@ export function Home() {
                 className="flex flex-col gap-2"
                 onSubmit={handleAddMember}
               >
-                <Input label="Email" type="email" required={true} />
+                <Input
+                  label="Email"
+                  type="email"
+                  required={true}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <Input
+                  label="Designation"
+                  type="text"
+                  required={true}
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                />
+                <Input
+                  label="Salary"
+                  type="number"
+                  step={0.01}
+                  value={empSalary}
+                  onClick={(e) => setempSalary(e.target.value)}
+                />
                 <div className="flex gap-2">
                   <Button type="submit">Add</Button>
                   <Button
@@ -399,6 +457,12 @@ export function Home() {
                     Cancel
                   </Button>
                 </div>
+                <Input
+                  label="Text"
+                  value={code}
+                  onChange={handleChange}
+                  readOnly // Add the readOnly attribute
+                />
               </form>
             </div>
           </CardHeader>

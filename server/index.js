@@ -7,6 +7,7 @@ const connection = require("./utils/Connection.js");
 const cors = require("cors");
 const Employee = require("./models/employee.model.js");
 const Companies = require("./models/companies.model.js");
+const teamCode=require("./models/teamCode.model.js")
 const Teams = require("./models/teams.model.js");
 const { Sequelize } = require("sequelize");
 const Attendance = require("./models/attendance.model.js");
@@ -41,5 +42,6 @@ app.listen(8000, async function () {
   await Teams.sync();
   await Employee.sync();
   await Attendance.sync();
+  await teamCode.sync();
   console.log("Created all tables");
 });

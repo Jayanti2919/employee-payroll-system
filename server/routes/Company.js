@@ -91,7 +91,10 @@ router.route('/fetchTeamData').get(async(req, res)=>{
   if(!valid) {
     res.send(JSON.stringify({message: "Unauthorized access"}))
   } else {
+    console.log(req.headers)
     const team_id = req.headers.team;
+    const team = await Teams.findOne({where: {id: team_id}})
+    console.log(team)
     const employees = await Employee.findAll({where: {team_id: team_id}});
     res.send(JSON.stringify({'employees': employees}))
   }

@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const Employee = require("../models/employee.model.js");
 const Companies = require("../models/companies.model.js");
+const teamCode = require("../models/teamCode.model.js");
 const getDate = require("../utils/GetDate.js");
 const { validateJWT, generateJWT } = require("../utils/Token.js");
 const jwt = require("jsonwebtoken");
@@ -165,5 +166,36 @@ router.route("/profilePhoto").post(async (req, res) => {
   // }
 });
 
+router.route("/addEmployee").post(async (req,res)=>{
+  const token = req.headers.token;
+  const valid = validateJWT(token);
+
+  if (!valid) {
+    res.send(JSON.stringify({ message: "Unauthorized access" }));
+  }else{
+    console.log(req.body)
+    const e_email=req.body.email;
+    const designation=req.body.designation;
+    const salary=req.body.salary;
+    const team_id=req.body.t_id;
+    const team=await Teams.findByPk(team_id)
+    const c_id=team.company_id
+    const code=await bcrypt.hash(e_email+c_id+team_id,salt=10)
+    try{
+      const t=await teamCode.create({
+        team_id:team_id,
+        company_id:c_id,
+        email:e_email,
+        code:code,
+        designation:designation,
+        salary:salary
+      })
+      await t.save();
+      res.send(JSON.stringify({ message: "user created", code: code }));
+    }catch(e){
+      res.send(e)
+    }
+  }
+})
 
 module.exports = router;
