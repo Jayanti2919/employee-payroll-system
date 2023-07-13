@@ -46,6 +46,7 @@ export function Home() {
   const [designation, setDesignation] = useState("");
   const [addTeam, setAddTeam] = useState(false);
   const [removeTeam, setRemoveTeam] = useState(false);
+  const [teams, setTeams] = useState([]);
 
   const [teamName, setTeamName] = useState('');
   const [description, setDescription] = useState('');
@@ -137,6 +138,8 @@ export function Home() {
         setDesignation(data.designation);
         setSalary(data.salary);
         setDate(data.joining_date.substring(0, 10));
+        setTeams(data.teams)
+        console.log(data.teams)
       }
     };
     fetchCompanyDetails();
@@ -176,23 +179,6 @@ export function Home() {
           />
         ))}
       </div>
-      <div className="mb-6 grid grid-cols-1 gap-y-12 gap-x-6 md:grid-cols-2 xl:grid-cols-3">
-        {statisticsChartsData.map((props) => (
-          <StatisticsChart
-            key={props.title}
-            {...props}
-            footer={
-              <Typography
-                variant="small"
-                className="flex items-center font-normal text-blue-gray-600"
-              >
-                <ClockIcon strokeWidth={2} className="h-4 w-4 text-inherit" />
-                &nbsp;{props.footer}
-              </Typography>
-            }
-          />
-        ))}
-      </div>
       <div className="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="overflow-hidden xl:col-span-2">
           <CardHeader
@@ -216,7 +202,7 @@ export function Home() {
                     strokeWidth={3}
                     className="h-4 w-4 text-blue-500"
                   />
-                  <strong>30 teams</strong>
+                  <strong>{teams.length} teams</strong>
                 </Typography>
               </div>
             </div>
@@ -262,7 +248,7 @@ export function Home() {
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["team id", "team", "description", "lead"].map((el) => (
+                  {["team id", "team", "description", "status"].map((el) => (
                     <th
                       key={el}
                       className="border-b border-blue-gray-50 py-3 px-6 text-left"
@@ -278,66 +264,40 @@ export function Home() {
                 </tr>
               </thead>
               <tbody>
-                {projectsTableData.map(
-                  ({ img, name, members, budget, completion }, key) => {
+                {teams.map(
+                  ({ id, name, description, status }, key) => {
                     const className = `py-3 px-5 ${
-                      key === projectsTableData.length - 1
+                      key === teams.length - 1
                         ? ""
                         : "border-b border-blue-gray-50"
                     }`;
 
                     return (
-                      <tr key={name}>
+                      <tr key={id}>
                         <td className={className}>
                           <div className="flex items-center gap-4">
-                            <Avatar src={img} alt={name} size="sm" />
                             <Typography
                               variant="small"
                               color="blue-gray"
                               className="font-bold"
                             >
-                              {name}
+                              {id}
                             </Typography>
                           </div>
                         </td>
                         <td className={className}>
-                          {members.map(({ img, name }, key) => (
-                            <Tooltip key={name} content={name}>
-                              <Avatar
-                                src={img}
-                                alt={name}
-                                size="xs"
-                                variant="circular"
-                                className={`cursor-pointer border-2 border-white ${
-                                  key === 0 ? "" : "-ml-2.5"
-                                }`}
-                              />
-                            </Tooltip>
-                          ))}
+                          {name}
                         </td>
                         <td className={className}>
                           <Typography
                             variant="small"
                             className="text-xs font-medium text-blue-gray-600"
                           >
-                            {budget}
+                            {description}
                           </Typography>
                         </td>
                         <td className={className}>
-                          <div className="w-10/12">
-                            <Typography
-                              variant="small"
-                              className="mb-1 block text-xs font-medium text-blue-gray-600"
-                            >
-                              {completion}%
-                            </Typography>
-                            <Progress
-                              value={completion}
-                              variant="gradient"
-                              color={completion === 100 ? "green" : "blue"}
-                              className="h-1"
-                            />
-                          </div>
+                          {status}
                         </td>
                       </tr>
                     );

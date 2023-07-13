@@ -73,11 +73,13 @@ router.route("/fetchCompany").get(async (req, res) => {
       if (!company) {
         res.send(JSON.stringify({ message: "None" }));
       } else {
+        const teams = await Teams.findAll({where: {company_id: company.id}})
         res.send(JSON.stringify({ 
           company : company.name,
           designation: emp.designation,
           joining_date: emp.joining_date,
           salary: emp.salary,
+          teams:teams
          }));
       }
     }
