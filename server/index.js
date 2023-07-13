@@ -9,6 +9,7 @@ const Employee = require("./models/employee.model.js");
 const Companies = require("./models/companies.model.js");
 const Teams = require("./models/teams.model.js");
 const { Sequelize } = require("sequelize");
+const Attendance = require("./models/attendance.model.js");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -39,5 +40,6 @@ app.listen(8000, async function () {
   await Companies.sync();
   await Employee.sync();
   await Teams.sync();
+  await Attendance.sync();
   console.log("Created all tables");
 });

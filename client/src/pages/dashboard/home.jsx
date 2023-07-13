@@ -13,6 +13,7 @@ import {
   Avatar,
   Tooltip,
   Progress,
+  Input,
 } from "@material-tailwind/react";
 import {
   ClockIcon,
@@ -33,15 +34,38 @@ import {
   UserPlusIcon,
   UserIcon,
   ChartBarIcon,
+  Bars2Icon,
 } from "@heroicons/react/24/solid";
 
 export function Home() {
   const nav = useNavigate();
   const [company, setCompany] = useState("");
-  const [salary, setSalary] = useState('');
-  const [attendance, setAttendance] = useState('Pending');
-  const [date, setDate] = useState('');
-  const [designation, setDesignation] = useState('');
+  const [salary, setSalary] = useState("");
+  const [attendance, setAttendance] = useState("Pending");
+  const [date, setDate] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [addTeam, setAddTeam] = useState(false);
+  const [removeTeam, setRemoveTeam] = useState(false);
+
+  const [teamName, setTeamName] = useState('');
+  const [description, setDescription] = useState('');
+
+  const handleAddTeam = async (e) => {
+    const token = sessionStorage.getItem('token')
+    e.preventDefault();
+    const response = await fetch('http://localhost:8000/company/addTeam', {
+      method: 'POST',
+      headers: {
+        'token': token,
+      },
+      body: {
+        name: teamName,
+        description: description,
+      }
+    })
+    const data = await response.json();
+    alert(data)
+  }
 
   const statisticsCardsData = [
     {
@@ -104,10 +128,10 @@ export function Home() {
       } else if (data.message === "None") {
         setCompany("");
       } else {
-        setCompany(data.company)
-        setDesignation(data.designation)
-        setSalary(data.salary)
-        setDate(data.joining_date.substring(0,10))
+        setCompany(data.company);
+        setDesignation(data.designation);
+        setSalary(data.salary);
+        setDate(data.joining_date.substring(0, 10));
       }
     };
     fetchCompanyDetails();
@@ -129,7 +153,7 @@ export function Home() {
       <Button size="lg">Join a Company</Button>
     </div>
   ) : (
-    <div className="mt-12">
+    <div className="relative mt-12">
       <div className="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-4">
         {statisticsCardsData.map(({ icon, title, footer, ...rest }) => (
           <StatisticsCard
@@ -174,15 +198,22 @@ export function Home() {
           >
             <div>
               <Typography variant="h6" color="blue-gray" className="mb-1">
-                Projects
+                Teams
               </Typography>
-              <Typography
-                variant="small"
-                className="flex items-center gap-1 font-normal text-blue-gray-600"
+              <div
+                className={`${designation === "Owner" ? "block" : "hidden"}`}
               >
-                <CheckIcon strokeWidth={3} className="h-4 w-4 text-blue-500" />
-                <strong>30 done</strong> this month
-              </Typography>
+                <Typography
+                  variant="small"
+                  className="flex items-center gap-1 font-normal text-blue-gray-600"
+                >
+                  <CheckIcon
+                    strokeWidth={3}
+                    className="h-4 w-4 text-blue-500"
+                  />
+                  <strong>30 teams</strong>
+                </Typography>
+              </div>
             </div>
             <Menu placement="left-start">
               <MenuHandler>
@@ -195,31 +226,50 @@ export function Home() {
                 </IconButton>
               </MenuHandler>
               <MenuList>
-                <MenuItem>Action</MenuItem>
-                <MenuItem>Another Action</MenuItem>
-                <MenuItem>Something else here</MenuItem>
+                <MenuItem
+                  onClick={(e) => {
+                    setAddTeam(true);
+                  }}
+                >
+                  Add a Team
+                </MenuItem>
+                <MenuItem>Remove a Team</MenuItem>
               </MenuList>
             </Menu>
+            <div className={`${addTeam ? "block" : "hidden"}`}>
+              <Card>
+                <Bars2Icon
+                  strokeWidth={3}
+                  className="h-6 w-6 text-blue-gray-500 cursor-pointer"
+                  onClick={(e) => {
+                    setAddTeam(false);
+                  }}
+                />
+                <form action="" className="p-4 flex flex-col gap-2" onSubmit={handleAddTeam}>
+                  <Input type="text" required={true} label="Team Name" onChange={(e)=>{setTeamName(e.target.value)}} />
+                  <Input type="text" required={true} label="Team Description" onChange={(e)=>{setDescription(e.target.value)}} />
+                  <Button type="submit">Add</Button>
+                </form>
+              </Card>
+            </div>
           </CardHeader>
           <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["companies", "members", "budget", "completion"].map(
-                    (el) => (
-                      <th
-                        key={el}
-                        className="border-b border-blue-gray-50 py-3 px-6 text-left"
+                  {["team id", "team", "description", "lead"].map((el) => (
+                    <th
+                      key={el}
+                      className="border-b border-blue-gray-50 py-3 px-6 text-left"
+                    >
+                      <Typography
+                        variant="small"
+                        className="text-[11px] font-medium uppercase text-blue-gray-400"
                       >
-                        <Typography
-                          variant="small"
-                          className="text-[11px] font-medium uppercase text-blue-gray-400"
-                        >
-                          {el}
-                        </Typography>
-                      </th>
-                    )
-                  )}
+                        {el}
+                      </Typography>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>

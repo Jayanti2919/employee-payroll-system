@@ -3,6 +3,7 @@ const router = express.Router();
 const getDate = require("../utils/GetDate.js");
 const Employee = require("../models/employee.model.js");
 const Companies = require("../models/companies.model.js");
+const Teams = require("../models/teams.model.js");
 const { validateJWT } = require("../utils/Token.js");
 const jwt = require("jsonwebtoken");
 
@@ -52,5 +53,36 @@ router.route("/create").post(async (req, res) => {
   }
 });
 
+
+router.route('/addTeam').post(async (req, res) => {
+  const token = req.headers.token;
+  console.log(token)
+  const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email;
+
+  const emp = Employee.findOne({where: {email: email}})
+  if(!emp) {
+    res.send(JSON.stringify({'message': 'Error'}));
+  } else {
+    try{
+      const team = await Teams.create({
+        name: req.body.name,
+        description: req.body.description,
+        company_id: emp.company_id,
+        status: 'active',
+      })
+      await team.save();
+      const company = await Companies.findOne({where: {id: emp.company_id}})
+      var teams = JSON.parse(company.teams);
+      teams.team.id = team.name
+      company.teams = JSON.stringify(teams)
+      await company.save()
+      console.log(company.teams)
+      res.send("DONE")
+    } catch(error) {
+      console.log(error)
+      res.send("Error")
+    }
+  }
+})
 
 module.exports = router;
