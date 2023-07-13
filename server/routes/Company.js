@@ -85,4 +85,16 @@ router.route('/addTeam').post(async (req, res) => {
   }
 })
 
+router.route('/fetchTeamData').get(async(req, res)=>{
+  const token = req.headers.token;
+  const valid = validateJWT(token)
+  if(!valid) {
+    res.send(JSON.stringify({message: "Unauthorized access"}))
+  } else {
+    const team_id = req.headers.team;
+    const employees = await Employee.findAll({where: {team_id: team_id}});
+    res.send(JSON.stringify({'employees': employees}))
+  }
+})
+
 module.exports = router;

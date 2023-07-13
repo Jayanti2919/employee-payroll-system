@@ -38,8 +38,8 @@ app.listen(8000, async function () {
       console.log(error);
     });
   await Companies.sync();
-  await Employee.sync();
   await Teams.sync();
+  await Employee.sync();
   await Attendance.sync();
   console.log("Created all tables");
 });

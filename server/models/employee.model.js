@@ -43,6 +43,20 @@ const Employee = connection.define('employee', {
             key: 'id',
         }
     }, 
+    team_id : {
+        type: DataTypes.BIGINT,
+        references: {
+            model: 'teams',
+            key: 'id',
+        }
+    }, 
+    company_id : {
+        type: DataTypes.BIGINT,
+        references: {
+            model: 'companies',
+            key: 'id',
+        }
+    }, 
     status : {
         type: DataTypes.ENUM,
         values: ['active', 'inactive'],
