@@ -356,15 +356,13 @@ router.route("/getAttendance").get(async (req, res) => {
           });
           // console.log(emp_absent[0].dataValues.Count)
           // console.log(emp_present[0].dataValues.Count)
-          const absent =  emp_absent[0].dataValues.Count
-          const present =  emp_present[0].dataValues.Count
-          console.log(absent)
-          console.log(present)
-          res.send({
-            present: present,
-            pending: absent,
+          const absent =  emp_absent[0]
+          const present =  emp_present[0]
+          res.send(JSON.stringify({
+            present: JSON.stringify(present),
+            pending: JSON.stringify(absent),
             joining: emp.joining_date,
-          });
+          }));
         } catch (error) {
           console.log(error);
           res.send(JSON.stringify({ message: "Error Occurred" }));

@@ -16,20 +16,19 @@ export function AttendanceTracker() {
   const [designation, setDesignation] = useState("");
   const [company, setCompany] = useState("");
   const months = [
-    { value: 1, label: 'January' },
-    { value: 2, label: 'February' },
-    { value: 3, label: 'March' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'May' },
-    { value: 6, label: 'June' },
-    { value: 7, label: 'July' },
-    { value: 8, label: 'August' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'October' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'December' },
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
   ];
-  
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -60,6 +59,46 @@ export function AttendanceTracker() {
     fetchCompanyDetails();
   }, []);
 
+  const [email, setEmail] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+
+  const handleAttendanceFetch = async (e) => {
+    e.preventDefault();
+    const token = sessionStorage.getItem("token");
+    const response = await fetch(
+      "http://localhost:8000/employee/getAttendance",
+      {
+        method: "GET",
+        headers: {
+          token: token,
+          email: email,
+          month: selectedMonth,
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (!data.present) {
+      console.log(
+        data.pending
+          .split(":")[2]
+          .substring(0, data.pending.split(":").length - 1)
+      );
+    } else if(!data.pending) {
+        console.log(
+          data.present
+            .split(":")[2]
+            .substring(0, data.present.split(":").length - 1)
+        );
+    } else {
+        console.log(
+          data.present
+            .split(":")[2]
+            .substring(0, data.present.split(":").length - 1)
+        );
+    }
+  };
+
   return designation === "Owner" ? (
     <div className="mt-10 px-10">
       <div>
@@ -67,7 +106,7 @@ export function AttendanceTracker() {
           {company}
         </Typography>
       </div>
-      <form action="">
+      <form action="" onSubmit={handleAttendanceFetch}>
         <Card className="mt-14 mb-10 items-center">
           <CardHeader
             variant="gradient"
@@ -84,17 +123,21 @@ export function AttendanceTracker() {
               label="Email of Employee"
               size="lg"
               onChange={(e) => {
-                setName(e.target.value);
+                setEmail(e.target.value);
               }}
               required={true}
             />
-            <Select label="Month">
-              {months.map((month) => (
-                <MenuItem key={month.value} value={month.value}>
-                  {month.label}
-                </MenuItem>
-              ))}
-            </Select>
+            <Input
+              type="number"
+              label="Month"
+              size="lg"
+              onChange={(e) => {
+                setSelectedMonth(e.target.value);
+              }}
+              required={true}
+              max={12}
+              min={1}
+            />
           </CardBody>
           <CardFooter className="pt-0">
             <Button variant="gradient" fullWidth type="submit">
