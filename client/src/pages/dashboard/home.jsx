@@ -148,7 +148,6 @@ export function Home() {
         }
       );
       const data = await response.json();
-      console.log(data)
       if (data.message === "Unauthorized access") {
         nav("/auth/sign-in");
       } else if (data.message === "None") {
@@ -216,6 +215,29 @@ export function Home() {
     }
   };
 
+  const handleAttendance = async (e) => {
+    e.preventDefault();
+    if (attendance === "pending") {
+      const token = sessionStorage.getItem("token");
+      const response = await fetch(
+        "http://localhost:8000/employee/attendance",
+        {
+          method: "GET",
+          headers: {
+            token: token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.message === "An error occurred") {
+        alert(data.message);
+      } else {
+        alert("Attendance updated");
+      }
+    }
+  };
+
   return company === "" ? (
     <div className="flex min-h-[80vh] min-w-full flex-col items-center justify-center gap-10">
       <Button
@@ -250,6 +272,16 @@ export function Home() {
             }
           />
         ))}
+      </div>
+      <div className={`${attendance==='Pending'? 'block': 'hidden'} mt-10 mb-10 px-4`}>
+        <Card className="flex flex-row justify-between px-10 py-10 items-center">
+          <Typography className="font-semibold">
+            Mark your attendance for {new Date().toLocaleDateString()}
+          </Typography>
+          <Button variant="outlined" color="green" onClick={(e)=>{handleAttendance}}>
+            Present
+          </Button>
+        </Card>
       </div>
       <div className="mb-4 grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="overflow-hidden xl:col-span-2">
@@ -484,7 +516,7 @@ export function Home() {
                 <div key={id} className="flex items-start gap-4 py-3">
                   <div
                     className={`relative p-1 after:absolute after:-bottom-6 after:left-2/4 after:w-0.5 after:-translate-x-2/4 after:bg-blue-gray-50 after:content-[''] ${
-                      key === ordersOverviewData.length - 1
+                      key === members.length - 1
                         ? "after:h-0"
                         : "after:h-4/6"
                     }`}
