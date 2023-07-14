@@ -81,6 +81,10 @@ router.route("/fetchCompany").get(async (req, res) => {
         const teams = await Teams.findAll({
           where: { company_id: company.id },
         });
+        const att = await Attendance.findOne({
+          order: [["createdAt", "DESC"]],
+          where:{emp_id:emp.id}
+        });
         res.send(
           JSON.stringify({
             company: company.name,
@@ -88,6 +92,7 @@ router.route("/fetchCompany").get(async (req, res) => {
             joining_date: emp.joining_date,
             salary: emp.salary,
             teams: teams,
+            attendance: att.attendance,
           })
         );
       }
@@ -122,7 +127,6 @@ router.route("/fetchProfile").get(async (req, res) => {
           })
         );
       } else {
-        console.log("helleooo");
         const teams = await Teams.findAll({
           where: { company_id: company.id },
         });

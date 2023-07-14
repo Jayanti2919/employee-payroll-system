@@ -14,18 +14,10 @@ import {
   Switch,
 } from "@material-tailwind/react";
 import {
-  ClockIcon,
   CheckIcon,
   EllipsisVerticalIcon,
-  ArrowUpIcon,
 } from "@heroicons/react/24/outline";
 import { StatisticsCard } from "@/widgets/cards";
-import { StatisticsChart } from "@/widgets/charts";
-import {
-  statisticsChartsData,
-  projectsTableData,
-  ordersOverviewData,
-} from "@/data";
 import { useNavigate } from "react-router-dom";
 import {
   BanknotesIcon,
@@ -58,8 +50,6 @@ export function Home() {
   const [role, setRole] = useState("");
   const [code, setCode] = useState("");
   const [empSalary, setempSalary] = useState(0);
-
-  const [checked, setChecked] = useState(false)
 
   const handleCopyClick = (e) => {
     e.preventDefault();
@@ -158,6 +148,7 @@ export function Home() {
         setSalary(data.salary);
         setDate(data.joining_date.substring(0, 10));
         setTeams(data.teams);
+        setAttendance(data.attendance);
       }
     };
     fetchCompanyDetails();
@@ -217,7 +208,7 @@ export function Home() {
 
   const handleAttendance = async (e) => {
     e.preventDefault();
-    if (attendance === "pending") {
+    if (attendance === "Pending") {
       const token = sessionStorage.getItem("token");
       const response = await fetch(
         "http://localhost:8000/employee/attendance",
@@ -234,6 +225,7 @@ export function Home() {
         alert(data.message);
       } else {
         alert("Attendance updated");
+        setAttendance('Present')
       }
     }
   };
@@ -278,7 +270,7 @@ export function Home() {
           <Typography className="font-semibold">
             Mark your attendance for {new Date().toLocaleDateString()}
           </Typography>
-          <Button variant="outlined" color="green" onClick={(e)=>{handleAttendance}}>
+          <Button variant="outlined" color="green" onClick={handleAttendance}>
             Present
           </Button>
         </Card>
@@ -540,7 +532,7 @@ export function Home() {
                     </Typography>
                     
                   </div>
-                  <div>
+                  <div className={designation==='Owner' ? 'block' : 'hidden'}>
                     <Switch
                       label={status}
                       labelProps={{
