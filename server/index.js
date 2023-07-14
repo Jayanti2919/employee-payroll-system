@@ -11,7 +11,8 @@ const teamCode = require("./models/teamCode.model.js");
 const Teams = require("./models/teams.model.js");
 const { Sequelize } = require("sequelize");
 const Attendance = require("./models/attendance.model.js");
-const getDate=require("./utils/GetDate.js")
+const getDate=require("./utils/GetDate.js");
+const Salary = require("./models/salary.models.js");
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -44,6 +45,7 @@ app.listen(8000, async function () {
   await Employee.sync();
   await Attendance.sync();
   await teamCode.sync();
+  await Salary.sync();
   console.log("Created all tables");
 
   async function callFunction() {

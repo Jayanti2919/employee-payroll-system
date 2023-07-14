@@ -7,7 +7,7 @@ import {
   UserPlusIcon,
   PlusIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, JoinTeam, Notifications, CreateCompany } from "@/pages/dashboard";
+import { Home, Profile, JoinTeam, Salary, CreateCompany } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 import AttendanceTracker from "./pages/dashboard/attendanceTracker";
 
@@ -39,9 +39,9 @@ export const routes = [
       },
       {
         icon: <BellIcon {...icon} />,
-        name: "notifactions",
-        path: "/notifactions",
-        element: <Notifications />,
+        name: "salary management",
+        path: "/salary-management",
+        element: <Salary />,
       },
       {
         icon: <PlusIcon {...icon} />,

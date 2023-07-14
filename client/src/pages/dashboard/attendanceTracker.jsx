@@ -115,7 +115,7 @@ const handleOwnAttendanceFetch = async (e) => {
           {company}
         </Typography>
       </div>
-      <form action="" onSubmit={handleOwnAttendanceFetch}>
+      <form action="" onSubmit={handleAttendanceFetch}>
         <Card className="mt-14 mb-10 items-center">
           <CardHeader
             variant="gradient"
@@ -127,6 +127,15 @@ const handleOwnAttendanceFetch = async (e) => {
             </Typography>
           </CardHeader>
           <CardBody className="flex flex-col gap-4">
+            <Input
+              type="email"
+              label="Employee Email"
+              size="lg"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              required={true}
+            />
             <Input
               type="number"
               label="Month"
