@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/24/solid";
 import { Home, Profile, JoinTeam, Notifications, CreateCompany } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
+import AttendanceTracker from "./pages/dashboard/attendanceTracker";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -47,6 +48,12 @@ export const routes = [
         name: "create company",
         path: "/create-company",
         element: <CreateCompany />,
+      },
+      {
+        icon: <PlusIcon {...icon} />,
+        name: "Track Attendance",
+        path: "/attendance-tracker",
+        element: <AttendanceTracker />,
       },
     ],
   },
