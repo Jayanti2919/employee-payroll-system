@@ -11,6 +11,7 @@ const dotenv = require("dotenv");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const fs = require("fs");
 const Teams = require("../models/teams.model.js");
+const Attendance = require("../models/attendance.model.js");
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ router.route("/create").post(async (req, res) => {
       password: password,
       contact_number: contact,
       joining_date: currentDateTimeIST,
-      status:'active'
+      status: "active",
     });
     await emp.save();
     res.send(JSON.stringify({ message: "user created" }));
@@ -71,7 +72,9 @@ router.route("/fetchCompany").get(async (req, res) => {
     if (!emp) {
       res.send(JSON.stringify({ message: "No such user" }));
     } else {
-      const company = await Companies.findOne({ where: { id: emp.company_id } });
+      const company = await Companies.findOne({
+        where: { id: emp.company_id },
+      });
       if (!company) {
         res.send(JSON.stringify({ message: "None" }));
       } else {
@@ -225,7 +228,7 @@ router.route("/join").post(async (req, res) => {
   } else {
     const code = req.body.code;
     const t_code = await teamCode.findOne({ where: { code: code } });
-    console.log(t_code)
+    console.log(t_code);
     if (!t_code) {
       res.send(JSON.stringify({ message: "Invalid Code1" }));
     } else {
@@ -237,19 +240,41 @@ router.route("/join").post(async (req, res) => {
           data.email === jwt.decode(token, process.env.JWT_SECRET_KEY).email
         ) {
           const emp = await Employee.findOne({ where: { email: data.email } });
-          emp.salary=t_code.salary
-          emp.designation=t_code.designation
-          emp.team_id=t_code.team_id
-          emp.company_id=t_code.company_id
-          emp.designation=t_code.designation
-          
-          emp.joining_date=getDate()
-          await emp.save()
-          res.send("ok")
+          emp.salary = t_code.salary;
+          emp.designation = t_code.designation;
+          emp.team_id = t_code.team_id;
+          emp.company_id = t_code.company_id;
+          emp.designation = t_code.designation;
+
+          emp.joining_date = getDate();
+          await emp.save();
+          res.send("ok");
         }
       }
     }
   }
 });
+
+
+router.route("/attendance").get(async (req,res)=>{
+  const token = req.headers.token;
+  const valid = validateJWT(token);
+
+  if (!valid) {
+    res.send(JSON.stringify({ message: "Unauthorized access" }));
+  } else {
+    const email=jwt.decode(token,process.env.JWT_SECRET_KEY).email
+    try {
+    const emp=await Employee.findOne({where:{email:email}})
+    const att=await Attendance.findOne({where:{emp_id:emp.id}}) 
+    att.attendance="Present"
+    att.save();
+    res.send(JSON.stringify({ message: "attendance updated" }));
+    } catch (error) {
+      console.log(error);
+      res.send(JSON.stringify({ message: "An error occurred" }));
+    }
+  }
+})
 
 module.exports = router;

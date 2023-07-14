@@ -11,6 +11,7 @@ import {
   MenuList,
   MenuItem,
   Input,
+  Switch,
 } from "@material-tailwind/react";
 import {
   ClockIcon,
@@ -34,6 +35,7 @@ import {
   XCircleIcon,
   PlusCircleIcon,
   DocumentDuplicateIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/solid";
 
 export function Home() {
@@ -56,6 +58,8 @@ export function Home() {
   const [role, setRole] = useState("");
   const [code, setCode] = useState("");
   const [empSalary, setempSalary] = useState(0);
+
+  const [checked, setChecked] = useState(false)
 
   const handleCopyClick = (e) => {
     e.preventDefault();
@@ -181,8 +185,7 @@ export function Home() {
     if (data.message) {
       nav("/auth/sign-in");
     } else {
-      setMembers(data.members);
-      console.log(members);
+      setMembers(data.employees);
     }
   }
 
@@ -389,7 +392,7 @@ export function Home() {
                           {description}
                         </Typography>
                       </td>
-                      <td className={className}>{status}</td>
+                      <td className={`${className} capitalize`}>{status}</td>
                     </tr>
                   );
                 })}
@@ -464,7 +467,7 @@ export function Home() {
                   label="Invite Code"
                   value={code}
                   onChange={handleChange}
-                  readOnly // Add the readOnly attribute
+                  readOnly
                   onClick={handleCopyClick}
                   className="cursor-copy"
                 />
@@ -476,9 +479,9 @@ export function Home() {
             </div>
           </CardHeader>
           <CardBody className="pt-0">
-            {ordersOverviewData.map(
-              ({ icon, color, title, description }, key) => (
-                <div key={title} className="flex items-start gap-4 py-3">
+            {members.map(
+              ({ id, name, email, status }, key) => (
+                <div key={id} className="flex items-start gap-4 py-3">
                   <div
                     className={`relative p-1 after:absolute after:-bottom-6 after:left-2/4 after:w-0.5 after:-translate-x-2/4 after:bg-blue-gray-50 after:content-[''] ${
                       key === ordersOverviewData.length - 1
@@ -486,9 +489,7 @@ export function Home() {
                         : "after:h-4/6"
                     }`}
                   >
-                    {React.createElement(icon, {
-                      className: `!w-5 !h-5 ${color}`,
-                    })}
+                    <UserCircleIcon className="h-5 w-5"/>
                   </div>
                   <div>
                     <Typography
@@ -496,15 +497,25 @@ export function Home() {
                       color="blue-gray"
                       className="block font-medium"
                     >
-                      {title}
+                      {name}
                     </Typography>
                     <Typography
                       as="span"
                       variant="small"
                       className="text-xs font-medium text-blue-gray-500"
                     >
-                      {description}
+                      {email}
                     </Typography>
+                    
+                  </div>
+                  <div>
+                    <Switch
+                      label={status}
+                      labelProps={{
+                        className: "text-sm font-normal text-blue-gray-500 capitalize",
+                      }} 
+                      defaultChecked={status === 'active' ? true : false}
+                      />
                   </div>
                 </div>
               )
