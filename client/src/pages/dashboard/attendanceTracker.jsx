@@ -78,7 +78,35 @@ export function AttendanceTracker() {
         pending: data.pending.split(":")[2].slice(0, -1),
       });
     }
-  };
+};
+
+const handleOwnAttendanceFetch = async (e) => {
+    e.preventDefault();
+    const token = sessionStorage.getItem("token");
+    const response = await fetch(
+      "http://localhost:8000/employee/getSelfAttendance",
+      {
+        method: "GET",
+        headers: {
+          token: token,
+          month: selectedMonth,
+        },
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    if (!data.present) {
+      setAttendance({ pending: data.pending.split(":")[2].slice(0, -1), present:"0" });
+    } else if (!data.pending) {
+      setAttendance({ present: data.present.split(":")[2].slice(0, -1), pending:"0" });
+    } else {
+      setAttendance({
+        present: data.present.split(":")[2].slice(0, -1),
+        pending: data.pending.split(":")[2].slice(0, -1),
+      });
+    }
+
+  }
 
   return designation === "Owner" ? (
     <div className="mt-10 px-10">
@@ -87,7 +115,7 @@ export function AttendanceTracker() {
           {company}
         </Typography>
       </div>
-      <form action="" onSubmit={handleAttendanceFetch}>
+      <form action="" onSubmit={handleOwnAttendanceFetch}>
         <Card className="mt-14 mb-10 items-center">
           <CardHeader
             variant="gradient"
@@ -95,19 +123,10 @@ export function AttendanceTracker() {
             className="mb-4 grid w-fit place-items-center py-5 px-10"
           >
             <Typography variant="h5" color="white">
-              Track Employee Attendance
+              Track Your Attendance
             </Typography>
           </CardHeader>
           <CardBody className="flex flex-col gap-4">
-            <Input
-              type="email"
-              label="Email of Employee"
-              size="lg"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              required={true}
-            />
             <Input
               type="number"
               label="Month"
@@ -133,7 +152,48 @@ export function AttendanceTracker() {
       </form>
     </div>
   ) : (
-    <div>You do not have access to this page</div>
+    <div className="mt-10 px-10">
+      <div>
+        <Typography variant="h2" className="text-blue-gray-600">
+          {company}
+        </Typography>
+      </div>
+      <form action="" onSubmit={handleOwnAttendanceFetch}>
+        <Card className="mt-14 mb-10 items-center">
+          <CardHeader
+            variant="gradient"
+            color="blue"
+            className="mb-4 grid w-fit place-items-center py-5 px-10"
+          >
+            <Typography variant="h5" color="white">
+              Track Your Attendance
+            </Typography>
+          </CardHeader>
+          <CardBody className="flex flex-col gap-4">
+            <Input
+              type="number"
+              label="Month"
+              size="lg"
+              onChange={(e) => {
+                setSelectedMonth(e.target.value);
+              }}
+              required={true}
+              max={12}
+              min={1}
+            />
+          </CardBody>
+          <CardFooter className="pt-0">
+            <Button variant="gradient" fullWidth type="submit">
+              Check
+            </Button>
+            <div className="flex gap-10 mt-5 ">
+              <Typography className="font-bold">Present: {attendance.present}</Typography>
+              <Typography className="font-bold">Pending: {attendance.pending}</Typography>
+            </div>
+          </CardFooter>
+        </Card>
+      </form>
+    </div>
   );
 }
 
