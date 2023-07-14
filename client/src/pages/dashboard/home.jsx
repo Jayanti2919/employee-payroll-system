@@ -462,7 +462,7 @@ export function Home() {
                   label="Invite Code"
                   value={code}
                   onChange={handleChange}
-                  readOnly // Add the readOnly attribute
+                  readOnly 
                   onClick={handleCopyClick}
                   className="cursor-copy"
                 />

@@ -7,7 +7,7 @@ import {
   UserPlusIcon,
   PlusIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Tables, Notifications, CreateCompany } from "@/pages/dashboard";
+import { Home, Profile, JoinTeam, Notifications, CreateCompany } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -32,9 +32,9 @@ export const routes = [
       },
       {
         icon: <TableCellsIcon {...icon} />,
-        name: "tables",
-        path: "/tables",
-        element: <Tables />,
+        name: "Join a Team",
+        path: "/join-team",
+        element: <JoinTeam />,
       },
       {
         icon: <BellIcon {...icon} />,

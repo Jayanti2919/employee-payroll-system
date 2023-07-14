@@ -21,7 +21,7 @@ const teamCode = connection.define('teamCode', {
         allowNull: false,
     },
     code:{
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
     },
     designation: {
