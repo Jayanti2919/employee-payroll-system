@@ -100,42 +100,4 @@ router.route('/fetchTeamData').get(async(req, res)=>{
   }
 })
 
-router.route("/join").post(async (req, res) => {
-  const token = req.headers.token;
-  const valid = validateJWT(token);
-
-  if (!valid) {
-    res.send(JSON.stringify({ message: "Unauthorized access" }));
-  } else {
-    const code = req.body.code;
-    const t_code = await teamCode.findOne({ where: { code: code } });
-    console.log(t_code)
-    if (!t_code) {
-      res.send(JSON.stringify({ message: "Invalid Code" }));
-    } else {
-      if (!validateJWT(code))
-        res.send(JSON.stringify({ message: "Invalid Code" }));
-      else {
-        const data = jwt.decode(code, process.env.JWT_SECRET_KEY);
-        if (
-          data.email === jwt.decode(token, process.env.JWT_SECRET_KEY).email
-        ) {
-          const emp = await Employee.findOne({ where: { email: data.email } });
-          emp.salary=t_code.salary
-          emp.designation=t_code.designation
-          emp.team_id=t_code.team_id
-          emp.company_id=t_code.company_id
-          emp.designation=t_code.designation
-          
-          emp.joining_date=getDate()
-          await emp.save()
-          res.send(JSON.stringify({message: "Employee Added"}))
-        } else {
-          res.send(JSON.stringify({message: "Invalid token"}))
-        }
-      }
-    }
-  }
-});
-
 module.exports = router;

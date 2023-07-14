@@ -144,6 +144,7 @@ export function Home() {
         }
       );
       const data = await response.json();
+      console.log(data)
       if (data.message === "Unauthorized access") {
         nav("/auth/sign-in");
       } else if (data.message === "None") {
@@ -404,11 +405,12 @@ export function Home() {
             className="m-0 p-6"
           >
             <Typography variant="h6" color="blue-gray" className="mb-2">
-              Members of {selectedTeam.name}
+              {selectedTeam?`Members of ${selectedTeam.name}`:"Please Select a Team"}
+              
             </Typography>
             <div
               className={`${
-                designation === "Owner" ? "block" : "hidden"
+                (designation === "Owner" && selectedTeam) ? "block" : "hidden"
               } flex cursor-pointer items-center gap-2`}
               onClick={(e) => {
                 setAddMember(!addMember);
@@ -462,7 +464,7 @@ export function Home() {
                   label="Invite Code"
                   value={code}
                   onChange={handleChange}
-                  readOnly 
+                  readOnly // Add the readOnly attribute
                   onClick={handleCopyClick}
                   className="cursor-copy"
                 />

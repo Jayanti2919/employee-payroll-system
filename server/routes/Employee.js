@@ -27,6 +27,7 @@ router.route("/create").post(async (req, res) => {
       password: password,
       contact_number: contact,
       joining_date: currentDateTimeIST,
+      status:'active'
     });
     await emp.save();
     res.send(JSON.stringify({ message: "user created" }));
@@ -70,18 +71,22 @@ router.route("/fetchCompany").get(async (req, res) => {
     if (!emp) {
       res.send(JSON.stringify({ message: "No such user" }));
     } else {
-      const company = await Companies.findOne({ where: { email: email } });
+      const company = await Companies.findOne({ where: { id: emp.company_id } });
       if (!company) {
         res.send(JSON.stringify({ message: "None" }));
       } else {
-        const teams = await Teams.findAll({where: {company_id: company.id}})
-        res.send(JSON.stringify({ 
-          company : company.name,
-          designation: emp.designation,
-          joining_date: emp.joining_date,
-          salary: emp.salary,
-          teams:teams
-         }));
+        const teams = await Teams.findAll({
+          where: { company_id: company.id },
+        });
+        res.send(
+          JSON.stringify({
+            company: company.name,
+            designation: emp.designation,
+            joining_date: emp.joining_date,
+            salary: emp.salary,
+            teams: teams,
+          })
+        );
       }
     }
   }
@@ -114,9 +119,11 @@ router.route("/fetchProfile").get(async (req, res) => {
           })
         );
       } else {
-        console.log("helleooo")
-        const teams = await Teams.findAll({where: {company_id: company.id}})
-        await console.log(teams)
+        console.log("helleooo");
+        const teams = await Teams.findAll({
+          where: { company_id: company.id },
+        });
+        await console.log(teams);
         res.send(
           JSON.stringify({
             name: emp.name,
@@ -145,7 +152,7 @@ router.route("/profilePhoto").post(async (req, res) => {
   // });
 
   const file = req.file;
-  console.log(file)
+  console.log(file);
   // const stream = fs.createReadStream(file.path);
 
   // const params = {
@@ -166,36 +173,83 @@ router.route("/profilePhoto").post(async (req, res) => {
   // }
 });
 
-router.route("/addEmployee").post(async (req,res)=>{
+router.route("/addEmployee").post(async (req, res) => {
   const token = req.headers.token;
   const valid = validateJWT(token);
 
   if (!valid) {
     res.send(JSON.stringify({ message: "Unauthorized access" }));
-  }else{
-    console.log(req.body)
-    const e_email=req.body.email;
-    const designation=req.body.designation;
-    const salary=req.body.salary;
-    const team_id=req.body.t_id;
-    const team=await Teams.findByPk(team_id)
-    const c_id=team.company_id
-    const code=await bcrypt.hash(e_email+c_id+team_id,salt=10)
-    try{
-      const t=await teamCode.create({
-        team_id:team_id,
-        company_id:c_id,
-        email:e_email,
-        code:code,
-        designation:designation,
-        salary:salary
-      })
+  } else {
+    console.log(req.body);
+    const e_email = req.body.email;
+    const designation = req.body.designation;
+    const salary = req.body.salary;
+    const team_id = req.body.t_id;
+    const team = await Teams.findByPk(team_id);
+    const c_id = team.company_id;
+    const now = new Date();
+    const payload = {
+      team_id: team_id,
+      company_id: c_id,
+      email: e_email,
+      designation: designation,
+      salary: salary,
+      exp: now.getTime() + 30 * 24 * 60 * 60 * 1000, // expires in 30 days
+    };
+    const code = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+      algorithm: "HS256",
+    });
+    try {
+      const t = await teamCode.create({
+        team_id: team_id,
+        company_id: c_id,
+        email: e_email,
+        code: code,
+        designation: designation,
+        salary: salary,
+      });
       await t.save();
       res.send(JSON.stringify({ message: "user created", code: code }));
-    }catch(e){
-      res.send(e)
+    } catch (e) {
+      res.send(e);
     }
   }
-})
+});
+
+router.route("/join").post(async (req, res) => {
+  const token = req.headers.token;
+  const valid = validateJWT(token);
+
+  if (!valid) {
+    res.send(JSON.stringify({ message: "Unauthorized access" }));
+  } else {
+    const code = req.body.code;
+    const t_code = await teamCode.findOne({ where: { code: code } });
+    console.log(t_code)
+    if (!t_code) {
+      res.send(JSON.stringify({ message: "Invalid Code1" }));
+    } else {
+      if (!validateJWT(code))
+        res.send(JSON.stringify({ message: "Invalid Code" }));
+      else {
+        const data = jwt.decode(code, process.env.JWT_SECRET_KEY);
+        if (
+          data.email === jwt.decode(token, process.env.JWT_SECRET_KEY).email
+        ) {
+          const emp = await Employee.findOne({ where: { email: data.email } });
+          emp.salary=t_code.salary
+          emp.designation=t_code.designation
+          emp.team_id=t_code.team_id
+          emp.company_id=t_code.company_id
+          emp.designation=t_code.designation
+          
+          emp.joining_date=getDate()
+          await emp.save()
+          res.send("ok")
+        }
+      }
+    }
+  }
+});
 
 module.exports = router;
