@@ -15,20 +15,6 @@ import {
 export function AttendanceTracker() {
   const [designation, setDesignation] = useState("");
   const [company, setCompany] = useState("");
-  const months = [
-    { value: 1, label: "January" },
-    { value: 2, label: "February" },
-    { value: 3, label: "March" },
-    { value: 4, label: "April" },
-    { value: 5, label: "May" },
-    { value: 6, label: "June" },
-    { value: 7, label: "July" },
-    { value: 8, label: "August" },
-    { value: 9, label: "September" },
-    { value: 10, label: "October" },
-    { value: 11, label: "November" },
-    { value: 12, label: "December" },
-  ];
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -61,6 +47,10 @@ export function AttendanceTracker() {
 
   const [email, setEmail] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [attendance, setAttendance] = useState({
+    present: "0",
+    pending: "0",
+  });
 
   const handleAttendanceFetch = async (e) => {
     e.preventDefault();
@@ -79,23 +69,14 @@ export function AttendanceTracker() {
     const data = await response.json();
     console.log(data);
     if (!data.present) {
-      console.log(
-        data.pending
-          .split(":")[2]
-          .substring(0, data.pending.split(":").length - 1)
-      );
-    } else if(!data.pending) {
-        console.log(
-          data.present
-            .split(":")[2]
-            .substring(0, data.present.split(":").length - 1)
-        );
+      setAttendance({ pending: data.pending.split(":")[2].slice(0, -1), present:"0" });
+    } else if (!data.pending) {
+      setAttendance({ present: data.present.split(":")[2].slice(0, -1), pending:"0" });
     } else {
-        console.log(
-          data.present
-            .split(":")[2]
-            .substring(0, data.present.split(":").length - 1)
-        );
+      setAttendance({
+        present: data.present.split(":")[2].slice(0, -1),
+        pending: data.pending.split(":")[2].slice(0, -1),
+      });
     }
   };
 
@@ -143,6 +124,10 @@ export function AttendanceTracker() {
             <Button variant="gradient" fullWidth type="submit">
               Check
             </Button>
+            <div className="flex gap-10 mt-5 ">
+              <Typography className="font-bold">Present: {attendance.present}</Typography>
+              <Typography className="font-bold">Pending: {attendance.pending}</Typography>
+            </div>
           </CardFooter>
         </Card>
       </form>
