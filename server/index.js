@@ -12,7 +12,7 @@ const teamCode = require("./models/teamCode.model.js");
 const Teams = require("./models/teams.model.js");
 const { Sequelize } = require("sequelize");
 const Attendance = require("./models/attendance.model.js");
-const Salary = require("./models/salary.models.js");
+const Salary = require("./models/salary.model.js");
 const callFunction = require('./utils/CreateAttendance.js')
 
 app.use(bodyParser.json());

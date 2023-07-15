@@ -15,7 +15,7 @@ const Attendance = require("../models/attendance.model.js");
 const { connection } = require("../utils/Connection.js");
 
 const Sequelize = require("sequelize");
-const Salary = require("../models/salary.models.js");
+const Salary = require("../models/salary.model.js");
 const e = require("express");
 const callFunction = require("../utils/CreateAttendance.js");
 const Op = Sequelize.Op;
@@ -497,6 +497,7 @@ router.route("/giveSalary").post(async (req, res) => {
 router.route("/getSelfSalary").get(async (req, res) => {
   const token = req.headers.token;
   const valid = validateJWT(token);
+  console.log("called")
 
   if (!valid) {
     res.send(JSON.stringify({ message: "Unauthorized access 1" }));
@@ -504,11 +505,11 @@ router.route("/getSelfSalary").get(async (req, res) => {
     const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email;
     const emp = await Employee.findOne({ where: { email: email } });
     if (!emp.company_id) {
-      res.send("Employee not in company");
+      res.send(JSON.stringify({ message: "Employee not in company" }));
     } else {
       try {
         const salary = await Salary.findAll({ where: { emp_id: emp.id } });
-        res.send(salary);
+        res.send(JSON.stringify({ salary: salary }));
       } catch (e) {
         res.send(JSON.stringify({ message: "An error Occured" }));
       }

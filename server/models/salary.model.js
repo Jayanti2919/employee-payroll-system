@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 const connection = require('../utils/Connection.js')
 
 const Salary = connection.define('salaries', {
-    id : {
+    id: {
         type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
