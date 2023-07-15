@@ -130,24 +130,26 @@ router.route("/fetchProfile").get(async (req, res) => {
             email: emp.email,
             contact: emp.contact_number,
             joining_date: emp.joining_date,
+            image: emp.image,
             status: emp.status,
           })
-        );
-      } else {
-        const teams = await Teams.findAll({
-          where: { company_id: company.id },
-        });
-        res.send(
-          JSON.stringify({
-            name: emp.name,
-            salary: emp.salary,
-            email: emp.email,
-            contact: emp.contact_number,
-            joining_date: emp.joining_date,
-            company_name: company.name,
-            designation: emp.designation,
-            salary: emp.salary,
-            status: emp.status,
+          );
+        } else {
+          const teams = await Teams.findAll({
+            where: { company_id: company.id },
+          });
+          res.send(
+            JSON.stringify({
+              name: emp.name,
+              salary: emp.salary,
+              email: emp.email,
+              contact: emp.contact_number,
+              joining_date: emp.joining_date,
+              company_name: company.name,
+              designation: emp.designation,
+              salary: emp.salary,
+              status: emp.status,
+              image: emp.image,
           })
         );
       }
@@ -156,34 +158,19 @@ router.route("/fetchProfile").get(async (req, res) => {
 });
 
 router.route("/profilePhoto").post(async (req, res) => {
-  // const s3 = new S3Client({
-  //   region: process.env.S3_BUCKET_REGION,
-  //   credentials:{
-  //     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-  //     accessKeyId: process.env.S3_ACCESS_KEY,
-  //   }
-  // });
-
-  const file = req.file;
-  console.log(file);
-  // const stream = fs.createReadStream(file.path);
-
-  // const params = {
-  //   Bucket: process.env.S3_BUCKET_NAME,
-  //   Key: file.name,
-  //   Body: stream,
-  // };
-
-  // try {
-  //   const upload = new PutObjectCommand(params);
-  //   const promise = await s3.send(upload);
-  //   console.log(promise);
-  //   console.log("Uploaded!");
-  //   res.send(JSON.stringify({'message':"Uploaded"}))
-  // } catch (error) {
-  //   console.log(error);
-  //   res.send(JSON.stringify({'message':"Error"}))
-  // }
+  const email = jwt.decode(req.headers.token, process.env.JWT_SECRET_KEY).email
+  const emp = await Employee.findOne({where: {email: email}})
+  if(!emp) {
+    res.send(JSON.stringify({message: 'Error Occurred'}))
+  } else {
+    try{
+      emp.image = req.body.url;
+      await emp.save();
+      res.send(JSON.stringify({message: "Uploaded successfully"}))
+    } catch(error) {
+      res.send(JSON.stringify({message: "Error Occured"}))
+    }
+  }
 });
 
 router.route("/addEmployee").post(async (req, res) => {

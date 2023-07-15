@@ -31,11 +31,8 @@ router.route("/upload").post(upload.single("file"), async (req, res) => {
   try {
     const upload = new PutObjectCommand(params);
     const promise = await s3.send(upload);
-    const url = await getSignedUrl(s3, upload);
-    console.log("Uploaded!");
     const location = `https://${params.Bucket}.s3.amazonaws.com/${encodeURIComponent(params.Key)}`;
-    console.log(location);
-    res.send(JSON.stringify({ url: url }));
+    res.send(JSON.stringify({ url: location }));
   } catch (error) {
     console.log(error);
     res.send(JSON.stringify({ message: "Error" }));

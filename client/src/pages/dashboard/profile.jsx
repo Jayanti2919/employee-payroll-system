@@ -50,6 +50,8 @@ export function Profile() {
         setJoiningDate(data.joining_date.substring(0, 10));
         if (data.designation) {
           setDesignation(data.designation);
+        } if(data.image) {
+          setImage(data.image)
         }
       }
     };
@@ -75,7 +77,20 @@ export function Profile() {
       console.log(response.data)
       if(response.data.url){
         setImage(response.data.url)
-        alert("Posted!");
+        const token = sessionStorage.getItem('token')
+        const response2 = await fetch('http://localhost:8000/employee/profilePhoto', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': token,
+          },
+          body: JSON.stringify({
+            url: response.data.url,
+          })
+        })
+        const data = await response2.json();
+        alert(data.message);
+        setEdit(false)
       } else {
         alert("Error Occurred")
       }
