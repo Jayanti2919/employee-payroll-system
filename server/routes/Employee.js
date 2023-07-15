@@ -17,6 +17,7 @@ const { connection } = require("../utils/Connection.js");
 const Sequelize = require("sequelize");
 const Salary = require("../models/salary.models.js");
 const e = require("express");
+const callFunction = require("../utils/CreateAttendance.js");
 const Op = Sequelize.Op;
 const fn = Sequelize.fn;
 
@@ -227,7 +228,7 @@ router.route("/join").post(async (req, res) => {
     const t_code = await teamCode.findOne({ where: { code: code } });
     console.log(t_code);
     if (!t_code) {
-      res.send(JSON.stringify({ message: "Invalid Code1" }));
+      res.send(JSON.stringify({ message: "Invalid Code" }));
     } else {
       if (!validateJWT(code))
         res.send(JSON.stringify({ message: "Invalid Code" }));
@@ -245,7 +246,8 @@ router.route("/join").post(async (req, res) => {
 
           emp.joining_date = getDate();
           await emp.save();
-          res.send("ok");
+          callFunction()
+          res.send(JSON.stringify({ message: "Joined" }));
         }
       }
     }

@@ -6,6 +6,7 @@ const Companies = require("../models/companies.model.js");
 const Teams = require("../models/teams.model.js");
 const { validateJWT } = require("../utils/Token.js");
 const jwt = require("jsonwebtoken");
+const callFunction = require("../utils/CreateAttendance.js");
 
 router.route("/create").post(async (req, res) => {
   const token = req.headers.token;
@@ -35,6 +36,7 @@ router.route("/create").post(async (req, res) => {
           emp.joining_date = currentDate;
           emp.salary = body.salary;
           await emp.save();
+          callFunction()
           res.send(JSON.stringify({ message: "Company created" }));
         } catch (error) {
           console.log(error);

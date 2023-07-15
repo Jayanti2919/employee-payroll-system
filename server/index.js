@@ -13,6 +13,7 @@ const Teams = require("./models/teams.model.js");
 const { Sequelize } = require("sequelize");
 const Attendance = require("./models/attendance.model.js");
 const Salary = require("./models/salary.models.js");
+const callFunction = require('./utils/CreateAttendance.js')
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -48,30 +49,12 @@ app.listen(8000, async function () {
   await teamCode.sync();
   await Salary.sync();
   console.log("Created all tables");
-
-  async function callFunction() {
-    const emp = await Employee.findAll();
-    emp.map(async (e) => {
-      try {
-        const date = new Date();
-        date.setHours(0, 0, 0, 0);
-        const att = await Attendance.create({
-          emp_id: e.id,
-          company_id: e.company_id,
-          date: date,
-          attendance: "pending",
-        });
-        await att.save();
-      } catch (error) {
-        console.log(error);
-      }
-    });
-  }
+  
 
   function scheduleNextCall() {
     const now = new Date();
     const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    callFunction()
+    callFunction();
     const timeUntilNextCall = nextDay.getTime() - now.getTime();
     setTimeout(() => {
       callFunction();

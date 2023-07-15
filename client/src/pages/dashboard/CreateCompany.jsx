@@ -30,6 +30,8 @@ export function CreateCompany() {
       const data = await response.json()
       if(data.message==='Company created') {
         try{
+          const formData = new FormData();
+          formData.append('file', logo)
           const response2 = await axios.post(
             "http://localhost:8000/file/upload",
             formData,
@@ -48,7 +50,7 @@ export function CreateCompany() {
 
           const data3 = await response3.json()
           if(data3.message==='uploaded') {
-            alert(data.message);
+            alert('Company Created');
           } else {
             alert('There was an error in uploading the image')
           }
