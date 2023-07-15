@@ -6,6 +6,9 @@ import {
   ArrowRightOnRectangleIcon,
   UserPlusIcon,
   PlusIcon,
+  UserGroupIcon,
+  BanknotesIcon,
+  PresentationChartLineIcon,
 } from "@heroicons/react/24/solid";
 import { Home, Profile, JoinTeam, Salary, CreateCompany } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
@@ -32,28 +35,28 @@ export const routes = [
         element: <Profile />,
       },
       {
-        icon: <TableCellsIcon {...icon} />,
-        name: "Join a Team",
-        path: "/join-team",
-        element: <JoinTeam />,
+        icon: <PresentationChartLineIcon {...icon} />,
+        name: "Track Attendance",
+        path: "/attendance-tracker",
+        element: <AttendanceTracker />,
       },
       {
-        icon: <BellIcon {...icon} />,
+        icon: <BanknotesIcon {...icon} />,
         name: "salary management",
         path: "/salary-management",
         element: <Salary />,
+      },
+      {
+        icon: <UserGroupIcon {...icon} />,
+        name: "Join a Team",
+        path: "/join-team",
+        element: <JoinTeam />,
       },
       {
         icon: <PlusIcon {...icon} />,
         name: "create company",
         path: "/create-company",
         element: <CreateCompany />,
-      },
-      {
-        icon: <PlusIcon {...icon} />,
-        name: "Track Attendance",
-        path: "/attendance-tracker",
-        element: <AttendanceTracker />,
       },
     ],
   },

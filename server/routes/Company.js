@@ -100,4 +100,18 @@ router.route('/fetchTeamData').get(async(req, res)=>{
   }
 })
 
+router.route('/updateCompany').post(async (req, res) => {
+  const email = jwt.decode(req.headers.token, process.env.JWT_SECRET_KEY).email
+  try {
+    const comp = await Companies.findOne({where: {email: email}})
+    comp.image = req.body.url;
+    await comp.save();
+    res.send(JSON.stringify({message: 'uploaded'}))
+  } catch(error) {
+    console.log(error)
+    res.send(JSON.stringify({message: 'Error'}))
+  }
+
+})
+
 module.exports = router;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Card, CardHeader, Button, CardBody, Input, Checkbox, CardFooter, Typography } from '@material-tailwind/react'
-
+import axios from 'axios'
 export function CreateCompany() {
 
   const [name, setName] = useState('')
@@ -28,7 +28,34 @@ export function CreateCompany() {
         })
       })
       const data = await response.json()
-      alert(data.message);
+      if(data.message==='Company created') {
+        try{
+          const response2 = await axios.post(
+            "http://localhost:8000/file/upload",
+            formData,
+          );
+
+          const response3 = await fetch('http://localhost:8000/company/updateCompany', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              token: token,
+            },
+            body: {
+              url: response2.data.url,
+            }
+          })
+
+          const data3 = await response3.json()
+          if(data3.message==='uploaded') {
+            alert(data.message);
+          } else {
+            alert('There was an error in uploading the image')
+          }
+        } catch(error) {
+          alert(error)
+        }
+      }  
     } catch(error) {
       console.log(error)
     }
@@ -52,7 +79,7 @@ export function CreateCompany() {
             <Input type="text" label="Name" size="lg" onChange={(e)=>{setName(e.target.value)}} required={true} />
             <Input type="text" label="GST Number" size="lg" onChange={(e)=>{setGst(e.target.value)}} required={true} />
             <Input type="number" label="Contact Number" size="lg" onChange={(e)=>{setContact(e.target.value)}} required={true} />
-            <Input type="number" step={0.01} label="Salary" size="lg" onChange={(e)=>{setSalary(e.target.value)}}/>
+            <Input type="number" step={0.01} label="Your Salary" size="lg" onChange={(e)=>{setSalary(e.target.value)}}/>
             <Input type="file" label="Company Logo" size="lg" onChange={(e)=>{setLogo(e.target.files[0])}}/>
           </CardBody>
           <CardFooter className="pt-0">

@@ -51,14 +51,15 @@ app.listen(8000, async function () {
   console.log("Created all tables");
 
   async function callFunction() {
-    // This is the function you want to call every 24 hours
     const emp = await Employee.findAll();
     emp.map(async (e) => {
       try {
+        const date = new Date();
+        date.setHours(0, 0, 0, 0);
         const att = await Attendance.create({
           emp_id: e.id,
           company_id: e.company_id,
-          date: getDate(),
+          date: date,
           attendance: "pending",
         });
         await att.save();
@@ -67,21 +68,18 @@ app.listen(8000, async function () {
         console.log(error);
       }
     });
-
-    // Add your function code here
   }
 
   function scheduleNextCall() {
     const now = new Date();
-    const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Add 24 hours in milliseconds
+    const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
     callFunction()
     const timeUntilNextCall = nextDay.getTime() - now.getTime();
     setTimeout(() => {
       callFunction();
-      scheduleNextCall(); // Schedule the next call after the current one has finished
+      scheduleNextCall();
     }, timeUntilNextCall);
   }
 
-  // Start the initial scheduling
   scheduleNextCall();
 });
