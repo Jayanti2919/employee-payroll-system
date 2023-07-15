@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const dotenv = require("dotenv");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 dotenv.config();
 
@@ -24,14 +25,17 @@ router.route("/upload").post(upload.single("file"), async (req, res) => {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: req.file.originalname,
     Body: req.file.buffer,
+    ContentType: "image/jpeg",
   };
 
   try {
     const upload = new PutObjectCommand(params);
     const promise = await s3.send(upload);
-    console.log(promise);
+    const url = await getSignedUrl(s3, upload);
     console.log("Uploaded!");
-    res.send(JSON.stringify({ message: "Uploaded" }));
+    const location = `https://${params.Bucket}.s3.amazonaws.com/${encodeURIComponent(params.Key)}`;
+    console.log(location);
+    res.send(JSON.stringify({ url: url }));
   } catch (error) {
     console.log(error);
     res.send(JSON.stringify({ message: "Error" }));

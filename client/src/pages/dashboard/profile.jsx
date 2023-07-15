@@ -72,7 +72,13 @@ export function Profile() {
         "http://localhost:8000/file/upload",
         formData,
       );
-      alert("Posted!");
+      console.log(response.data)
+      if(response.data.url){
+        setImage(response.data.url)
+        alert("Posted!");
+      } else {
+        alert("Error Occurred")
+      }
     } catch (error) {
       console.error("Error adding Image:", error);
     }

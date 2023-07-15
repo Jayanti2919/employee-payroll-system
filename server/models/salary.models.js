@@ -4,6 +4,7 @@ const connection = require('../utils/Connection.js')
 const Salary = connection.define('salaries', {
     id : {
         type: DataTypes.BIGINT,
+        autoIncrement: true,
         primaryKey: true,
     }, 
     company_id : {
@@ -20,10 +21,6 @@ const Salary = connection.define('salaries', {
             key: 'id',
         }
     }, 
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     amount: {
         type: DataTypes.DOUBLE,
     },

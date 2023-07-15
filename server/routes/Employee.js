@@ -15,6 +15,8 @@ const Attendance = require("../models/attendance.model.js");
 const { connection } = require("../utils/Connection.js");
 
 const Sequelize = require("sequelize");
+const Salary = require("../models/salary.models.js");
+const e = require("express");
 const Op = Sequelize.Op;
 const fn = Sequelize.fn;
 
@@ -326,11 +328,18 @@ router.route("/getAttendance").get(async (req, res) => {
             group: [
               Sequelize.fn("DATE_FORMAT", Sequelize.col("createdAt"), "%Y-%m"),
             ],
-            where: { emp_id: emp.id, attendance: "Present", createdAt: {
-              [Sequelize.Op.and]: [
-                Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('createdAt')), req.headers.month),
-              ],
-            }, },
+            where: {
+              emp_id: emp.id,
+              attendance: "Present",
+              createdAt: {
+                [Sequelize.Op.and]: [
+                  Sequelize.where(
+                    Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+                    req.headers.month
+                  ),
+                ],
+              },
+            },
           });
           const emp_absent = await Attendance.findAll({
             attributes: [
@@ -347,19 +356,28 @@ router.route("/getAttendance").get(async (req, res) => {
             group: [
               Sequelize.fn("DATE_FORMAT", Sequelize.col("createdAt"), "%Y-%m"),
             ],
-            where: { emp_id: emp.id, attendance: "Pending", createdAt: {
-              [Sequelize.Op.and]: [
-                Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('createdAt')), req.headers.month),
-              ],
-            }, },
+            where: {
+              emp_id: emp.id,
+              attendance: "Pending",
+              createdAt: {
+                [Sequelize.Op.and]: [
+                  Sequelize.where(
+                    Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+                    req.headers.month
+                  ),
+                ],
+              },
+            },
           });
-          const absent =  emp_absent[0]
-          const present =  emp_present[0]
-          res.send(JSON.stringify({
-            present: JSON.stringify(present),
-            pending: JSON.stringify(absent),
-            joining: emp.joining_date,
-          }));
+          const absent = emp_absent[0];
+          const present = emp_present[0];
+          res.send(
+            JSON.stringify({
+              present: JSON.stringify(present),
+              pending: JSON.stringify(absent),
+              joining: emp.joining_date,
+            })
+          );
         } catch (error) {
           console.log(error);
           res.send(JSON.stringify({ message: "Error Occurred" }));
@@ -376,67 +394,132 @@ router.route("/getSelfAttendance").get(async (req, res) => {
   if (!valid) {
     res.send(JSON.stringify({ message: "Unauthorized access 1" }));
   } else {
-    const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email
+    const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email;
     const owner = await Employee.findOne({
       where: { email: email },
     });
     if (!owner) {
       res.send(JSON.stringify({ message: "Unauthorized access 2" }));
     } else {
-        try {
-          const emp_present = await Attendance.findAll({
-            attributes: [
-              [
-                Sequelize.fn(
-                  "DATE_FORMAT",
-                  Sequelize.col("createdAt"),
-                  "%Y-%m"
-                ),
-                "month",
-              ],
-              [Sequelize.fn("COUNT", Sequelize.col("emp_id")), "Count"],
-            ],
-            group: [
+      try {
+        const emp_present = await Attendance.findAll({
+          attributes: [
+            [
               Sequelize.fn("DATE_FORMAT", Sequelize.col("createdAt"), "%Y-%m"),
+              "month",
             ],
-            where: { emp_id: owner.id, attendance: "Present", createdAt: {
+            [Sequelize.fn("COUNT", Sequelize.col("emp_id")), "Count"],
+          ],
+          group: [
+            Sequelize.fn("DATE_FORMAT", Sequelize.col("createdAt"), "%Y-%m"),
+          ],
+          where: {
+            emp_id: owner.id,
+            attendance: "Present",
+            createdAt: {
               [Sequelize.Op.and]: [
-                Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('createdAt')), req.headers.month),
-              ],
-            }, },
-          });
-          const emp_absent = await Attendance.findAll({
-            attributes: [
-              [
-                Sequelize.fn(
-                  "DATE_FORMAT",
-                  Sequelize.col("createdAt"),
-                  "%Y-%m"
+                Sequelize.where(
+                  Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+                  req.headers.month
                 ),
-                "month",
               ],
-              [Sequelize.fn("COUNT", Sequelize.col("emp_id")), "Count"],
-            ],
-            group: [
+            },
+          },
+        });
+        const emp_absent = await Attendance.findAll({
+          attributes: [
+            [
               Sequelize.fn("DATE_FORMAT", Sequelize.col("createdAt"), "%Y-%m"),
+              "month",
             ],
-            where: { emp_id: owner.id, attendance: "Pending", createdAt: {
+            [Sequelize.fn("COUNT", Sequelize.col("emp_id")), "Count"],
+          ],
+          group: [
+            Sequelize.fn("DATE_FORMAT", Sequelize.col("createdAt"), "%Y-%m"),
+          ],
+          where: {
+            emp_id: owner.id,
+            attendance: "Pending",
+            createdAt: {
               [Sequelize.Op.and]: [
-                Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('createdAt')), req.headers.month),
+                Sequelize.where(
+                  Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+                  req.headers.month
+                ),
               ],
-            }, },
-          });
-          const absent =  emp_absent[0]
-          const present =  emp_present[0]
-          res.send(JSON.stringify({
+            },
+          },
+        });
+        const absent = emp_absent[0];
+        const present = emp_present[0];
+        res.send(
+          JSON.stringify({
             present: JSON.stringify(present),
             pending: JSON.stringify(absent),
             joining: owner.joining_date,
-          }));
-        } catch (error) {
-          console.log(error);
-          res.send(JSON.stringify({ message: "Error Occurred" }));
-        }
+          })
+        );
+      } catch (error) {
+        console.log(error);
+        res.send(JSON.stringify({ message: "Error Occurred" }));
+      }
+    }
+  }
+});
+
+router.route("/giveSalary").post(async (req, res) => {
+  const token = req.headers.token;
+  const valid = validateJWT(token);
+
+  if (!valid) {
+    res.send(JSON.stringify({ message: "Unauthorized access 1" }));
+  } else {
+    const owner_email = jwt.decode(token, process.env.JWT_SECRET_KEY).email;
+    const owner = await Employee.findOne({ where: { email: owner_email } });
+    const emp = await Employee.findOne({ where: { email: req.body.email } });
+    if (owner.company_id == emp.company_id) {
+      try {
+        const salary = await Salary.create({
+          emp_id: emp.id,
+          company_id: emp.company_id,
+          basic_pay: req.body.basic_pay,
+          total_allowance: req.body.total_allowance,
+          total_deduction: req.body.total_deduction,
+          gross_salary: req.body.basic_pay + req.body.total_allowance,
+          net_pay:
+            req.body.basic_pay +
+            req.body.total_allowance -
+            req.body.total_deductions,
+        });
+        salary.save();
+        res.send("Salary Updated");
+      } catch (e) {
+        console.log(e);
+        res.send("Error Occured");
+      }
+    } else res.send("cannot send Salary");
+  }
+});
+
+router.route("/getSelfSalary").get(async (req, res) => {
+  const token = req.headers.token;
+  const valid = validateJWT(token);
+
+  if (!valid) {
+    res.send(JSON.stringify({ message: "Unauthorized access 1" }));
+  } else {
+    const email = jwt.decode(token, process.env.JWT_SECRET_KEY).email;
+    const emp = await Employee.findOne({ where: { email: email } });
+    if (!emp.company_id) {
+      res.send("Employee not in company");
+    } else {
+      try{
+        const salary=await Salary.findAll({where:{emp_id:emp.id}})
+        res.send(salary)
+      }catch(e){
+        res.send("An error Occured")
+      }
+      
     }
   }
 });
