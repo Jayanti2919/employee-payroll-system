@@ -1,0 +1,41 @@
+const express = require("express");
+const router = express.Router();
+const multer = require("multer");
+const dotenv = require("dotenv");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
+dotenv.config();
+
+const upload = multer();
+
+router.route("/upload").post(upload.single("file"), async (req, res) => {
+  console.log("Called");
+  console.log(req.file);
+
+  const s3 = new S3Client({
+    region: process.env.S3_BUCKET_REGION,
+    credentials: {
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+      accessKeyId: process.env.S3_ACCESS_KEY,
+    },
+  });
+
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+  };
+
+  try {
+    const upload = new PutObjectCommand(params);
+    const promise = await s3.send(upload);
+    console.log(promise);
+    console.log("Uploaded!");
+    res.send(JSON.stringify({ message: "Uploaded" }));
+  } catch (error) {
+    console.log(error);
+    res.send(JSON.stringify({ message: "Error" }));
+  }
+});
+
+module.exports = router;

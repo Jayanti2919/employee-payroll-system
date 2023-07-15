@@ -13,6 +13,14 @@ export function Salary() {
   const [designation, setDesignation] = useState("");
   const [company, setCompany] = useState("");
 
+  const [salaryDetails, setSalaryDetails] = useState({
+    email: '',
+    basic_pay: 0,
+    total_allowance: 0,
+    total_deduction: 0,
+    salary_slip: null,
+  })
+
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     const fetchCompanyDetails = async () => {
@@ -42,6 +50,15 @@ export function Salary() {
     fetchCompanyDetails();
   }, []);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSalaryDetails({ ...salaryDetails, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    setSalaryDetails({ ...salaryDetails, salary_slip: e.target.files[0] });
+  };
+
   return designation === 'Owner' ? (
     <div className="mt-10 px-10">
       <div>
@@ -65,9 +82,11 @@ export function Salary() {
               type="email"
               label="Employee Email"
               size="lg"
-              // onChange={(e) => {
-              //   setEmail(e.target.value);
-              // }}
+              name="email"
+              value={salaryDetails.email}
+              onChange={(e) => {
+                handleChange
+              }}
               required={true}
             />
             <Input
@@ -75,19 +94,11 @@ export function Salary() {
               step={0.01}
               label="Basic Pay"
               size="lg"
-              // onChange={(e) => {
-              //   setSelectedMonth(e.target.value);
-              // }}
-              required={true}
-            />
-            <Input
-              type="number"
-              step={0.01}
-              label="Basic Pay"
-              size="lg"
-              // onChange={(e) => {
-              //   setSelectedMonth(e.target.value);
-              // }}
+              name="basic_pay"
+              value={salaryDetails.basic_pay}
+              onChange={(e) => {
+                handleChange
+              }}
               required={true}
             />
             <Input
@@ -95,9 +106,11 @@ export function Salary() {
               step={0.01}
               label="Total Allowance"
               size="lg"
-              // onChange={(e) => {
-              //   setSelectedMonth(e.target.value);
-              // }}
+              name="total_allowance"
+              value={salaryDetails.total_allowance}
+              onChange={(e) => {
+                handleChange
+              }}
               required={true}
             />
             <Input
@@ -105,18 +118,22 @@ export function Salary() {
               step={0.01}
               label="Total Deduction"
               size="lg"
-              // onChange={(e) => {
-              //   setSelectedMonth(e.target.value);
-              // }}
+              name="total_deduction"
+              value={salaryDetails.total_deduction}
+              onChange={(e) => {
+                handleChange
+              }}
               required={true}
             />
             <Input
               type="file"
               label="Salary Slip"
               size="lg"
-              // onChange={(e) => {
-              //   setSelectedMonth(e.target.value);
-              // }}
+              name="email"
+              value={salaryDetails.salary_slip}
+              onChange={(e) => {
+                handleFileChange
+              }}
             />
           </CardBody>
           <CardFooter className="pt-0">

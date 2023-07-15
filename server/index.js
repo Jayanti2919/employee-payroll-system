@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const employee_router = require("./routes/Employee.js");
 const company_router = require("./routes/Company.js");
+const file_router = require("./routes/Files.js");
 const connection = require("./utils/Connection.js");
 const cors = require("cors");
 const Employee = require("./models/employee.model.js");
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 app.use("/employee", employee_router);
 app.use("/company", company_router);
+app.use("/file", file_router);
 
 app.listen(8000, async function () {
   const sequelize = new Sequelize("mysql://root:@localhost:3306/", {

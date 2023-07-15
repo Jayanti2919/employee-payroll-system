@@ -135,7 +135,6 @@ router.route("/fetchProfile").get(async (req, res) => {
         const teams = await Teams.findAll({
           where: { company_id: company.id },
         });
-        await console.log(teams);
         res.send(
           JSON.stringify({
             name: emp.name,

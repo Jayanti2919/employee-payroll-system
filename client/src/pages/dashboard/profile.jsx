@@ -60,22 +60,17 @@ export function Profile() {
     e.preventDefault();
 
     if (!file) {
-      console.error("No file selected.");
+      alert("No file selected.");
       return;
     }
 
     const formData = new FormData();
     formData.append("file", file);
 
-    console.log(formData);
-
     try {
-      await axios.post(
-        "http://localhost:8000/employee/profilePhoto",
+    const response = await axios.post(
+        "http://localhost:8000/file/upload",
         formData,
-        {
-          headers: {},
-        }
       );
       alert("Posted!");
     } catch (error) {
