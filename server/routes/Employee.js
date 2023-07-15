@@ -133,23 +133,23 @@ router.route("/fetchProfile").get(async (req, res) => {
             image: emp.image,
             status: emp.status,
           })
-          );
-        } else {
-          const teams = await Teams.findAll({
-            where: { company_id: company.id },
-          });
-          res.send(
-            JSON.stringify({
-              name: emp.name,
-              salary: emp.salary,
-              email: emp.email,
-              contact: emp.contact_number,
-              joining_date: emp.joining_date,
-              company_name: company.name,
-              designation: emp.designation,
-              salary: emp.salary,
-              status: emp.status,
-              image: emp.image,
+        );
+      } else {
+        const teams = await Teams.findAll({
+          where: { company_id: company.id },
+        });
+        res.send(
+          JSON.stringify({
+            name: emp.name,
+            salary: emp.salary,
+            email: emp.email,
+            contact: emp.contact_number,
+            joining_date: emp.joining_date,
+            company_name: company.name,
+            designation: emp.designation,
+            salary: emp.salary,
+            status: emp.status,
+            image: emp.image,
           })
         );
       }
@@ -158,17 +158,17 @@ router.route("/fetchProfile").get(async (req, res) => {
 });
 
 router.route("/profilePhoto").post(async (req, res) => {
-  const email = jwt.decode(req.headers.token, process.env.JWT_SECRET_KEY).email
-  const emp = await Employee.findOne({where: {email: email}})
-  if(!emp) {
-    res.send(JSON.stringify({message: 'Error Occurred'}))
+  const email = jwt.decode(req.headers.token, process.env.JWT_SECRET_KEY).email;
+  const emp = await Employee.findOne({ where: { email: email } });
+  if (!emp) {
+    res.send(JSON.stringify({ message: "Error Occurred" }));
   } else {
-    try{
+    try {
       emp.image = req.body.url;
       await emp.save();
-      res.send(JSON.stringify({message: "Uploaded successfully"}))
-    } catch(error) {
-      res.send(JSON.stringify({message: "Error Occured"}))
+      res.send(JSON.stringify({ message: "Uploaded successfully" }));
+    } catch (error) {
+      res.send(JSON.stringify({ message: "Error Occured" }));
     }
   }
 });
@@ -472,19 +472,22 @@ router.route("/giveSalary").post(async (req, res) => {
           basic_pay: req.body.basic_pay,
           total_allowance: req.body.total_allowance,
           total_deduction: req.body.total_deduction,
-          gross_salary: req.body.basic_pay + req.body.total_allowance,
+          gross_salary:
+            parseFloat(req.body.basic_pay) +
+            parseFloat(req.body.total_allowance),
           net_pay:
-            req.body.basic_pay +
-            req.body.total_allowance -
-            req.body.total_deductions,
+            parseFloat(req.body.basic_pay) +
+            parseFloat(req.body.total_allowance) -
+            parseFloat(req.body.total_deduction),
+          salary_slip: req.body.salary_slip,
         });
         salary.save();
-        res.send("Salary Updated");
+        res.send(JSON.stringify({ message: "Salary Updated" }));
       } catch (e) {
         console.log(e);
-        res.send("Error Occured");
+        res.send(JSON.stringify({ message: "Error Occured" }));
       }
-    } else res.send("cannot send Salary");
+    } else res.send(JSON.stringify({ message: "cannot send Salary" }));
   }
 });
 
@@ -500,13 +503,12 @@ router.route("/getSelfSalary").get(async (req, res) => {
     if (!emp.company_id) {
       res.send("Employee not in company");
     } else {
-      try{
-        const salary=await Salary.findAll({where:{emp_id:emp.id}})
-        res.send(salary)
-      }catch(e){
-        res.send("An error Occured")
+      try {
+        const salary = await Salary.findAll({ where: { emp_id: emp.id } });
+        res.send(salary);
+      } catch (e) {
+        res.send(JSON.stringify({ message: "An error Occured" }));
       }
-      
     }
   }
 });

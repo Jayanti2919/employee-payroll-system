@@ -12,7 +12,6 @@ const teamCode = require("./models/teamCode.model.js");
 const Teams = require("./models/teams.model.js");
 const { Sequelize } = require("sequelize");
 const Attendance = require("./models/attendance.model.js");
-const getDate=require("./utils/GetDate.js");
 const Salary = require("./models/salary.models.js");
 
 app.use(bodyParser.json());
@@ -63,7 +62,6 @@ app.listen(8000, async function () {
           attendance: "pending",
         });
         await att.save();
-        console.log("created attendance for " + getDate());
       } catch (error) {
         console.log(error);
       }

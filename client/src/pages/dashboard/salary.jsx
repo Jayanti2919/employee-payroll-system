@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import axios from "axios";
 import {
   Typography,
   Input,
@@ -18,8 +19,48 @@ export function Salary() {
     basic_pay: 0,
     total_allowance: 0,
     total_deduction: 0,
-    salary_slip: null,
+    salary_slip: "",
   })
+
+  const [file,setFile]=useState(null)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      alert("No file selected.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+    const response = await axios.post(
+        "http://localhost:8000/file/upload",
+        formData,
+      );
+      console.log(response.data)
+      if(response.data.url){
+        setSalaryDetails({...salaryDetails, salary_slip:response.data.url})
+        const token = sessionStorage.getItem('token')
+        const response2 = await fetch('http://localhost:8000/employee/giveSalary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'token': token,
+          },
+          body: JSON.stringify(salaryDetails)
+        })
+        const data = await response2.json();
+        alert(data.message);
+      } else {
+        alert("Error Occurred")
+      }
+    } catch (error) {
+      console.error("Error adding Image:", error);
+    }
+  };
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -51,12 +92,14 @@ export function Salary() {
   }, []);
 
   const handleChange = (e) => {
+    console.log(e.target)
     const { name, value } = e.target;
     setSalaryDetails({ ...salaryDetails, [name]: value });
+
   };
 
   const handleFileChange = (e) => {
-    setSalaryDetails({ ...salaryDetails, salary_slip: e.target.files[0] });
+    setFile( e.target.files[0] );
   };
 
   return designation === 'Owner' ? (
@@ -66,7 +109,7 @@ export function Salary() {
           {company}
         </Typography>
       </div>
-      <form action="">
+      <form action="" onSubmit={handleSubmit}>
         <Card className="mt-14 mb-10 items-center">
           <CardHeader
             variant="gradient"
@@ -85,7 +128,7 @@ export function Salary() {
               name="email"
               value={salaryDetails.email}
               onChange={(e) => {
-                handleChange
+                handleChange(e)
               }}
               required={true}
             />
@@ -97,7 +140,7 @@ export function Salary() {
               name="basic_pay"
               value={salaryDetails.basic_pay}
               onChange={(e) => {
-                handleChange
+                handleChange(e)
               }}
               required={true}
             />
@@ -109,7 +152,7 @@ export function Salary() {
               name="total_allowance"
               value={salaryDetails.total_allowance}
               onChange={(e) => {
-                handleChange
+                handleChange(e)
               }}
               required={true}
             />
@@ -121,7 +164,7 @@ export function Salary() {
               name="total_deduction"
               value={salaryDetails.total_deduction}
               onChange={(e) => {
-                handleChange
+                handleChange(e)
               }}
               required={true}
             />
@@ -129,10 +172,9 @@ export function Salary() {
               type="file"
               label="Salary Slip"
               size="lg"
-              name="email"
-              value={salaryDetails.salary_slip}
+              name="salary_slip"
               onChange={(e) => {
-                handleFileChange
+                handleFileChange(e)
               }}
             />
           </CardBody>
