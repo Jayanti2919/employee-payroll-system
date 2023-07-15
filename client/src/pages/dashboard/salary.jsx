@@ -8,11 +8,13 @@ import {
   Card,
   CardHeader,
   CardBody,
+  Avatar,
 } from "@material-tailwind/react";
 
 export function Salary() {
   const [designation, setDesignation] = useState("");
   const [company, setCompany] = useState("");
+  const [img, setImg] = useState('/img/company_placeholder.png')
 
   const [salaryDetails, setSalaryDetails] = useState({
     email: '',
@@ -86,6 +88,9 @@ export function Salary() {
       } else {
         setCompany(data.company);
         setDesignation(data.designation);
+        if(data.img) {
+          setImg(data.img)
+        }
       }
     };
     fetchCompanyDetails();
@@ -104,7 +109,13 @@ export function Salary() {
 
   return designation === 'Owner' ? (
     <div className="mt-10 px-10">
-      <div>
+      <div className="flex gap-3 items-center">
+        <Avatar
+          src={img}
+          alt="profile-photo"
+          size="xl"
+          className="relative rounded-lg shadow-lg shadow-blue-gray-500/40"
+        />
         <Typography variant="h2" className="text-blue-gray-600">
           {company}
         </Typography>

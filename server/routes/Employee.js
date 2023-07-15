@@ -101,6 +101,7 @@ router.route("/fetchCompany").get(async (req, res) => {
             salary: emp.salary,
             teams: teams,
             attendance: att.attendance,
+            img: company.image,
           })
         );
       }

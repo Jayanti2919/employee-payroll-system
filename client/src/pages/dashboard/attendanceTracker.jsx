@@ -7,6 +7,7 @@ import {
   Input,
   CardFooter,
   Typography,
+  Avatar,
   Select,
   Menu,
   MenuItem,
@@ -15,6 +16,7 @@ import {
 export function AttendanceTracker() {
   const [designation, setDesignation] = useState("");
   const [company, setCompany] = useState("");
+  const [img, setImg] = useState('/img/company_placeholder.png')
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -40,6 +42,9 @@ export function AttendanceTracker() {
       } else {
         setCompany(data.company);
         setDesignation(data.designation);
+        if(data.img) {
+          setImg(data.img)
+        }
       }
     };
     fetchCompanyDetails();
@@ -69,18 +74,24 @@ export function AttendanceTracker() {
     const data = await response.json();
     console.log(data);
     if (!data.present) {
-      setAttendance({ pending: data.pending.split(":")[2].slice(0, -1), present:"0" });
+      setAttendance({
+        pending: data.pending.split(":")[2].slice(0, -1),
+        present: "0",
+      });
     } else if (!data.pending) {
-      setAttendance({ present: data.present.split(":")[2].slice(0, -1), pending:"0" });
+      setAttendance({
+        present: data.present.split(":")[2].slice(0, -1),
+        pending: "0",
+      });
     } else {
       setAttendance({
         present: data.present.split(":")[2].slice(0, -1),
         pending: data.pending.split(":")[2].slice(0, -1),
       });
     }
-};
+  };
 
-const handleOwnAttendanceFetch = async (e) => {
+  const handleOwnAttendanceFetch = async (e) => {
     e.preventDefault();
     const token = sessionStorage.getItem("token");
     const response = await fetch(
@@ -96,21 +107,32 @@ const handleOwnAttendanceFetch = async (e) => {
     const data = await response.json();
     console.log(data);
     if (!data.present) {
-      setAttendance({ pending: data.pending.split(":")[2].slice(0, -1), present:"0" });
+      setAttendance({
+        pending: data.pending.split(":")[2].slice(0, -1),
+        present: "0",
+      });
     } else if (!data.pending) {
-      setAttendance({ present: data.present.split(":")[2].slice(0, -1), pending:"0" });
+      setAttendance({
+        present: data.present.split(":")[2].slice(0, -1),
+        pending: "0",
+      });
     } else {
       setAttendance({
         present: data.present.split(":")[2].slice(0, -1),
         pending: data.pending.split(":")[2].slice(0, -1),
       });
     }
-
-  }
+  };
 
   return designation === "Owner" ? (
     <div className="mt-10 px-10">
-      <div>
+      <div className="flex gap-3 items-center">
+        <Avatar
+          src={img}
+          alt="profile-photo"
+          size="xl"
+          className="relative rounded-lg shadow-lg shadow-blue-gray-500/40"
+        />
         <Typography variant="h2" className="text-blue-gray-600">
           {company}
         </Typography>
@@ -152,9 +174,13 @@ const handleOwnAttendanceFetch = async (e) => {
             <Button variant="gradient" fullWidth type="submit">
               Check
             </Button>
-            <div className="flex gap-10 mt-5 ">
-              <Typography className="font-bold">Present: {attendance.present}</Typography>
-              <Typography className="font-bold">Pending: {attendance.pending}</Typography>
+            <div className="mt-5 flex gap-10 ">
+              <Typography className="font-bold">
+                Present: {attendance.present}
+              </Typography>
+              <Typography className="font-bold">
+                Pending: {attendance.pending}
+              </Typography>
             </div>
           </CardFooter>
         </Card>
@@ -195,9 +221,13 @@ const handleOwnAttendanceFetch = async (e) => {
             <Button variant="gradient" fullWidth type="submit">
               Check
             </Button>
-            <div className="flex gap-10 mt-5 ">
-              <Typography className="font-bold">Present: {attendance.present}</Typography>
-              <Typography className="font-bold">Pending: {attendance.pending}</Typography>
+            <div className="mt-5 flex gap-10 ">
+              <Typography className="font-bold">
+                Present: {attendance.present}
+              </Typography>
+              <Typography className="font-bold">
+                Pending: {attendance.pending}
+              </Typography>
             </div>
           </CardFooter>
         </Card>
